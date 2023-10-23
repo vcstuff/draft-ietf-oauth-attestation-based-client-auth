@@ -469,9 +469,10 @@ iOiJSUzI1[...omitted for brevity...]
       that the nonce provides sufficient entropy.
 
    The approach using a nonce explicitly provided by the authorization
-   server is usually prefered, however support by the authorization
-   server is OPTIONAL.  The "jti" method is mandatory and hence acts as
-   a default fallback.
+   server gives stronger replay attack detection guarantees, however
+   support by the authorization server is OPTIONAL to simplify mandatory
+   implementation requirements.  The "jti" method is mandatory and hence
+   acts as a default fallback.
 
 8.  Appendix A IANA Considerations
 
