@@ -5,8 +5,8 @@
 Network Working Group                                          T. Looker
 Internet-Draft                                                     MATTR
 Intended status: Informational                                P. Bastian
-Expires: 11 April 2024                              Bundesdruckerei GmbH
-                                                          9 October 2023
+Expires: 25 April 2024                              Bundesdruckerei GmbH
+                                                         23 October 2023
 
 
            OAuth 2.0 Attestation-Based Client Authentication
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 April 2024.
+   This Internet-Draft will expire on 25 April 2024.
 
 Copyright Notice
 
@@ -292,7 +292,7 @@ iOiJSUzI1[...omitted for brevity...]
    8.   The JWT MAY contain a "aal" (authenticator assurance level)
         claim that describes the attested assurance level of the Client
         Instance and the Client Instance Key. The claim value contains a
-        URL that references a jurisdictional framework.  Consumers of
+        URI that references a jurisdictional framework.  Consumers of
         the client attestation are RECOMMENDED to evaluate this claim,
         if they intend to state an assurance level for their issued
         tokens themselves.
