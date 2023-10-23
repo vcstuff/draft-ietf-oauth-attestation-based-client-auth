@@ -78,6 +78,7 @@ Table of Contents
    6.  Privacy Considerations
      6.1.  Client Instance Tracking Across Authorization Servers
    7.  Security Considerations
+     7.1.  Replay Attack Detection
    8.  Appendix A IANA Considerations
      8.1.  Sub-Namespace Registration of urn:ietf:params:oauth:client-
            assertion-type:jwt-client-attestation
@@ -246,47 +247,42 @@ iOiJSUzI1[...omitted for brevity...]
    Application of additional restrictions and policy are at the
    discretion of the authorization server.
 
-   1.   The JWT MUST contain an "iss" (issuer) claim that contains a
-        unique identifier for the entity that issued the JWT.  In the
-        absence of an application profile specifying otherwise,
-        compliant applications MUST compare issuer values using the
-        Simple String Comparison method defined in Section 6.2.1 of
-        [RFC3986].
+   1.  The JWT MUST contain an "iss" (issuer) claim that contains a
+       unique identifier for the entity that issued the JWT.  In the
+       absence of an application profile specifying otherwise, compliant
+       applications MUST compare issuer values using the Simple String
+       Comparison method defined in Section 6.2.1 of [RFC3986].
 
-   2.   The JWT MUST contain a "sub" (subject) claim with a value
-        corresponding to the "client_id" of the OAuth client.
+   2.  The JWT MUST contain a "sub" (subject) claim with a value
+       corresponding to the "client_id" of the OAuth client.
 
-   3.   The JWT MUST contain an "exp" (expiration time) claim that
-        limits the time window during which the JWT can be used.  The
-        authorization server MUST reject any JWT with an expiration time
-        that has passed, subject to allowable clock skew between
-        systems.
+   3.  The JWT MUST contain an "exp" (expiration time) claim that limits
+       the time window during which the JWT can be used.  The
+       authorization server MUST reject any JWT with an expiration time
+       that has passed, subject to allowable clock skew between systems.
 
-   4.   The JWT MUST contain an "cnf" claim conforming [RFC7800] that
-        conveys the key to be used for producing the client attestation
-        pop for client authentication with an authorization server.  The
-        key MUST be expressed using the "jwk" representation.
+   4.  The JWT MUST contain an "cnf" claim conforming [RFC7800] that
+       conveys the key to be used for producing the client attestation
+       pop for client authentication with an authorization server.  The
+       key MUST be expressed using the "jwk" representation.
 
-   5.   The JWT MAY contain an "nbf" (not before) claim that identifies
-        the time before which the token MUST NOT be accepted for
-        processing.
+   5.  The JWT MAY contain an "nbf" (not before) claim that identifies
+       the time before which the token MUST NOT be accepted for
+       processing.
 
-   6.   The JWT MAY contain an "iat" (issued at) claim that identifies
-        the time at which the JWT was issued.
+   6.  The JWT MAY contain an "iat" (issued at) claim that identifies
+       the time at which the JWT was issued.
 
-   7.   The JWT MAY contain a "jti" (JWT ID) claim that provides a
-        unique identifier for the token.
+   7.  The JWT MAY contain other claims.
 
-   8.   The JWT MAY contain other claims.
+   8.  The JWT MUST be digitally signed using an asymmetric
+       cryptographic algorithm.  The authorization server MUST reject
+       the JWT if it is using a Message Authentication Code (MAC) based
+       algorithm.  The authorization server MUST reject JWTs with an
+       invalid signature.
 
-   9.   The JWT MUST be digitally signed using an asymmetric
-        cryptographic algorithm.  The authorization server MUST reject
-        the JWT if it is using a Message Authentication Code (MAC) based
-        algorithm.  The authorization server MUST reject JWTs with an
-        invalid signature.
-
-   10.  The authorization server MUST reject a JWT that is not valid in
-        all other respects per "JSON Web Token (JWT)" [RFC7519].
+   9.  The authorization server MUST reject a JWT that is not valid in
+       all other respects per "JSON Web Token (JWT)" [RFC7519].
 
    The following example is the decoded header and payload of a JWT
    meeting the processing rules as defined above.
@@ -342,27 +338,32 @@ iOiJSUzI1[...omitted for brevity...]
         element to identify the authorization server as the intended
         audience of the JWT.
 
-   5.   The JWT MAY contain an "nbf" (not before) claim that identifies
+   5.   The JWT MAY contain an "nonce" claim containing a String value
+        that is provided by the authorization server to associate the
+        Client Attestation PoP JWT with a particular transaction and
+        prevent replay attacks.
+
+   6.   The JWT MAY contain an "nbf" (not before) claim that identifies
         the time before which the token MUST NOT be accepted for
         processing.
 
-   6.   The JWT MAY contain an "iat" (issued at) claim that identifies
+   7.   The JWT MAY contain an "iat" (issued at) claim that identifies
         the time at which the JWT was issued.  Note that the
         authorization server may reject JWTs with an "iat" claim value
         that is unreasonably far in the past.
 
-   7.   The JWT MAY contain other claims.
+   8.   The JWT MAY contain other claims.
 
-   8.   The JWT MUST be digitally signed using an asymmetric
+   9.   The JWT MUST be digitally signed using an asymmetric
         cryptographic algorithm.  The authorization server MUST reject
         the JWT if it is using a Message Authentication Code (MAC) based
         algorithm.  The authorization server MUST reject JWTs with an
         invalid signature.
 
-   9.   The public key used to verify the JWT MUST be the key located in
+   10.  The public key used to verify the JWT MUST be the key located in
         the "cnf" claim of the corresponding client attestation JWT.
 
-   10.  The authorization server MUST reject a JWT that is not valid in
+   11.  The authorization server MUST reject a JWT that is not valid in
         all other respects per "JSON Web Token (JWT)" [RFC7519].
 
    The following example is the decoded header and payload of a JWT
@@ -422,6 +423,40 @@ iOiJSUzI1[...omitted for brevity...]
 
    The guidance provided by [RFC7519] and [RFC8725] applies.
 
+7.1.  Replay Attack Detection
+
+   The following mechanisms exist within this client authentication
+   method in order to allow an authorization server to detect replay
+   attacks for presented client attestation PoPs:
+
+   *  The client uses "jti" (JWT ID) claims for the Client Attestation
+      PoP JWT and the authorization server maintains a list of used
+      (seen) "jti" values for the time of which the JWT would be
+      considered valid based on the applicable "exp" claim.  If any
+      Client Attestation PoP JWT would be replayed, the authorization
+      server would recognize the "jti" and respond with an
+      authentication error.
+
+   *  The authorization server provides a nonce for the particular
+      transaction and the client uses it for the "nonce" claim in the
+      Client Attestation PoP JWT.  The authorization server validates
+      that the nonce matches for the transaction.  This approach may
+      require an additional roundtrip in the protocol.  The
+      authorization server MUST ensure that the nonce provides
+      sufficient entropy.
+
+   *  The authorization server may expect the usage of a nonce in the
+      Client Attestation PoP JWT, but instead of providing the nonce
+      explicitly, the client may implicitly reuse an existing artefact,
+      e.g. the authorization code.  The authorization server MUST ensure
+      that the nonce provides sufficient entropy.
+
+   The approach using a nonce explicitly provided by the authorization
+   server gives stronger replay attack detection guarantees, however
+   support by the authorization server is OPTIONAL to simplify mandatory
+   implementation requirements.  The "jti" method is mandatory and hence
+   acts as a default fallback.
+
 8.  Appendix A IANA Considerations
 
 8.1.  Sub-Namespace Registration of urn:ietf:params:oauth:client-
@@ -480,10 +515,6 @@ iOiJSUzI1[...omitted for brevity...]
               P. Hunt, "OAuth 2.0 Dynamic Client Registration Protocol",
               RFC 7591, DOI 10.17487/RFC7591, July 2015,
               <https://www.rfc-editor.org/rfc/rfc7591>.
-
-   [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
-              Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
-              2015, <https://www.rfc-editor.org/rfc/rfc7638>.
 
    [RFC7800]  Jones, M., Bradley, J., and H. Tschofenig, "Proof-of-
               Possession Key Semantics for JSON Web Tokens (JWTs)",
@@ -554,9 +585,10 @@ A.1.  Wallet Instance Attestation
 
 Acknowledgments
 
-   We would like to thank Brian Campbell, Michael B.  Jones, Torsten
-   Lodderstedt, and Kristina Yasuda for their valuable contributions to
-   this specification.
+   We would like to thank Brian Campbell, Francesco Marino, Guiseppe De
+   Marco, Kristina Yasuda, Michael B.  Jones, Takahiko Kawasaki and
+   Torsten Lodderstedt for their valuable contributions to this
+   specification.
 
 Authors' Addresses
 
