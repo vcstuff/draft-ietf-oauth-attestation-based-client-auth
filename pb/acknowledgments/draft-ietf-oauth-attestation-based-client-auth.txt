@@ -569,7 +569,7 @@ Acknowledgments
 
    We would like to thank Brian Campbell, Francesco Marino, Guiseppe De
    Marco, Kristina Yasuda, Michael B.  Jones, Takahiko Kawasaki and
-   Torsten Lodderstedt, for their valuable contributions to this
+   Torsten Lodderstedt for their valuable contributions to this
    specification.
 
 Authors' Addresses
