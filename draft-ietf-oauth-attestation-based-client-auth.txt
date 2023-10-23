@@ -5,8 +5,8 @@
 Network Working Group                                          T. Looker
 Internet-Draft                                                     MATTR
 Intended status: Informational                                P. Bastian
-Expires: 11 March 2024                              Bundesdruckerei GmbH
-                                                        8 September 2023
+Expires: 25 April 2024                              Bundesdruckerei GmbH
+                                                         23 October 2023
 
 
            OAuth 2.0 Attestation-Based Client Authentication
@@ -47,7 +47,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 11 March 2024.
+   This Internet-Draft will expire on 25 April 2024.
 
 Copyright Notice
 
@@ -165,7 +165,7 @@ Table of Contents
    Attestation PoP with the Token Request to the Authorization Server.
    The Authorization Server validates the client attestation and thus
    authenticates the client.  The Authorization Server may continue to
-   issue sender-constrained access tokens using [DPOP].
+   issue sender-constrained access tokens using [RFC9449].
 
    Note that the protocol for steps 2 and 4 and how the client instance
    authenticates with the client backend is out of scope of this
@@ -470,10 +470,6 @@ iOiJSUzI1[...omitted for brevity...]
 
 9.1.  Normative References
 
-   [DPOP]     Fett, D., Campbell, B., Bradley, J., Lodderstedt, T.,
-              Jones, M., and D. Waite, "OAuth 2.0 Demonstrating Proof-
-              of-Possession at the Application Layer (DPoP)", n.d..
-
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -497,10 +493,6 @@ iOiJSUzI1[...omitted for brevity...]
               RFC 7591, DOI 10.17487/RFC7591, July 2015,
               <https://www.rfc-editor.org/rfc/rfc7591>.
 
-   [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
-              Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
-              2015, <https://www.rfc-editor.org/rfc/rfc7638>.
-
    [RFC7800]  Jones, M., Bradley, J., and H. Tschofenig, "Proof-of-
               Possession Key Semantics for JSON Web Tokens (JWTs)",
               RFC 7800, DOI 10.17487/RFC7800, April 2016,
@@ -519,6 +511,11 @@ iOiJSUzI1[...omitted for brevity...]
               Current Practices", BCP 225, RFC 8725,
               DOI 10.17487/RFC8725, February 2020,
               <https://www.rfc-editor.org/rfc/rfc8725>.
+
+   [RFC9449]  Fett, D., Campbell, B., Bradley, J., Lodderstedt, T.,
+              Jones, M., and D. Waite, "OAuth 2.0 Demonstrating Proof of
+              Possession (DPoP)", RFC 9449, DOI 10.17487/RFC9449,
+              September 2023, <https://www.rfc-editor.org/rfc/rfc9449>.
 
 9.2.  Informative References
 
