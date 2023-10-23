@@ -442,6 +442,10 @@ iOiJSUzI1[...omitted for brevity...]
 
 7.1.  Replay Attack Detection
 
+   The following mechanisms exist within this client authentication
+   method in order to allow an authorization server to detect replay
+   attacks for presented client attestation PoPs:
+
    *  The client uses "jti" (JWT ID) claims for the Client Attestation
       PoP JWT and the authorization server maintains a list of used
       (seen) "jti" values for the time of which the JWT would be
