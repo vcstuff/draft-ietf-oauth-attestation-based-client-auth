@@ -83,6 +83,7 @@ Table of Contents
            assertion-type:jwt-client-attestation
      8.2.  Registration of attest_jwt_client_auth Token Endpoint
            Authentication Method
+     8.3.  JSON Web Token Claims Registration
    9.  References
      9.1.  Normative References
      9.2.  Informative References
@@ -473,6 +474,22 @@ iOiJSUzI1[...omitted for brevity...]
    *  Change Controller: IESG
 
    *  Specification Document(s): TBC
+
+8.3.  JSON Web Token Claims Registration
+
+   This specification requests registration of the following Claims in
+   the IANA "JSON Web Token Claims" registry [@IANA.JWT] established by
+   [@!RFC7519].
+
+   *  Claim Name: aal
+
+   *  Claim Description: Reference to a trust framework that describes
+      the assurance level for the client.
+
+   *  Change Controller: IETF
+
+   *  Specification Document(s): [[ (##client-attestation-jwt) of this
+      specification ]]
 
 9.  References
 
