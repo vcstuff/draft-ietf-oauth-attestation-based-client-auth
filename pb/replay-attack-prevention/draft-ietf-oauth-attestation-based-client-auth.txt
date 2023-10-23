@@ -78,6 +78,7 @@ Table of Contents
    6.  Privacy Considerations
      6.1.  Client Instance Tracking Across Authorization Servers
    7.  Security Considerations
+     7.1.  Replay Attack Detection
    8.  Appendix A IANA Considerations
      8.1.  Sub-Namespace Registration of urn:ietf:params:oauth:client-
            assertion-type:jwt-client-attestation
@@ -439,8 +440,7 @@ iOiJSUzI1[...omitted for brevity...]
 
    The guidance provided by [RFC7519] and [RFC8725] applies.
 
-   Replay attack prevention MUST be considered by the protocols using
-   this client authentication method.  Possible mechanisms comprise:
+7.1.  Replay Attack Detection
 
    *  The client uses "jti" (JWT ID) claims for the Client Attestation
       PoP JWT and the authorization server maintains a list of used
