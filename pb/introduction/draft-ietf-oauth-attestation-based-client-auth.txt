@@ -458,10 +458,6 @@ iOiJSUzI1[...omitted for brevity...]
 
 9.1.  Normative References
 
-   [DPOP]     Fett, D., Campbell, B., Bradley, J., Lodderstedt, T.,
-              Jones, M., and D. Waite, "OAuth 2.0 Demonstrating Proof-
-              of-Possession at the Application Layer (DPoP)", n.d..
-
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
