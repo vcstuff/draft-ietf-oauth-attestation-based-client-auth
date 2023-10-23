@@ -562,9 +562,10 @@ A.1.  Wallet Instance Attestation
 
 Acknowledgments
 
-   We would like to thank Brian Campbell, Michael B.  Jones, Torsten
-   Lodderstedt, and Kristina Yasuda for their valuable contributions to
-   this specification.
+   We would like to thank Brian Campbell, Francesco Marino, Guiseppe De
+   Marco, Kristina Yasuda, Michael B.  Jones, Takahiko Kawasaki and
+   Torsten Lodderstedt for their valuable contributions to this
+   specification.
 
 Authors' Addresses
 
