@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-10-10T00:42:43.921989+00:00",
+  "timestamp": "2023-10-24T00:43:06.302236+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -462,7 +462,7 @@
       "id": "I_kwDOJaEkaM5mPkLA",
       "title": "Replay attack prevention through AS contributed nonce",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/9",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tplooker",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -471,8 +471,8 @@
       "labels": [],
       "body": "Currently the specification does not define a mechanism for an AS contributed nonce to feature in the client attestation PoP meaning replay attack detection by authorisation servers requires tracking the JTI within the time window set by the PoP's iat claim. We should elaborate on an AS contributed nonce for the specification.",
       "createdAt": "2023-05-18T10:00:50Z",
-      "updatedAt": "2023-10-08T15:18:03Z",
-      "closedAt": null,
+      "updatedAt": "2023-10-23T20:15:32Z",
+      "closedAt": "2023-10-23T20:15:32Z",
       "comments": [
         {
           "author": "paulbastian",
@@ -935,7 +935,7 @@
       "id": "I_kwDOJaEkaM5rDmRt",
       "title": "Diagram exceeds 72 charaters",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/28",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "paulbastian",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -944,8 +944,8 @@
       "labels": [],
       "body": "IETF drafts are expected to not exceed 72 characters per line. The diagram in the Introduction currently takes 91",
       "createdAt": "2023-07-10T06:55:56Z",
-      "updatedAt": "2023-09-06T06:43:19Z",
-      "closedAt": null,
+      "updatedAt": "2023-10-23T20:17:37Z",
+      "closedAt": "2023-10-23T20:17:37Z",
       "comments": []
     },
     {
@@ -1240,7 +1240,7 @@
       "id": "I_kwDOJaEkaM5s9MrT",
       "title": "endpoint URL in pop JWT?",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/38",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tlodderstedt",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [
@@ -1251,8 +1251,8 @@
       ],
       "body": "Should the actual URL the client attestation pop JWT shall be sent to be included in the pop JWT?\r\n\r\nDPoP has it but I assume the nonce is powerful enough to protect against replay but want to make sure we have thought about it.",
       "createdAt": "2023-07-30T15:48:54Z",
-      "updatedAt": "2023-09-20T20:09:49Z",
-      "closedAt": null,
+      "updatedAt": "2023-10-23T20:31:40Z",
+      "closedAt": "2023-10-23T20:31:40Z",
       "comments": [
         {
           "author": "peppelinux",
@@ -1296,7 +1296,7 @@
       "labels": [],
       "body": "To prevent replay attacks the following mechanisms could be used:\r\n- AS/Issuer providing a nonce\r\n- reuse of existing of existing parameters as nonce\r\n- limiting the lifetime of PoP (through JTI)\r\n\r\n### AS/Issuer providing a nonce\r\nThis requires an additional endpoint/ an additional roundtrip\r\n\r\n### reuse of existing of existing parameters as nonce\r\nFor some flows it might be doable to reuse the auth code/pre-auth code as a nonce, this saves another roundtrip but might not work for all flows, like PAR endpoint\r\n\r\n### limiting the lifetime of PoP (through JTI)\r\nThis is the existing mechanism described in the spec, the JWT PoP includes a jti and the AS needs to keep track of used jti values until they are expired",
       "createdAt": "2023-09-06T06:17:55Z",
-      "updatedAt": "2023-09-07T10:42:47Z",
+      "updatedAt": "2023-10-23T20:32:12Z",
       "closedAt": null,
       "comments": [
         {
@@ -1312,6 +1312,13 @@
           "body": "Support for a server generated nonce over which the attestation can be generated is something that is highly desirable to protect against pre-computation attacks. We have seen attacks where attackers deploy malware an pre-compute signatures (including manipulation of the system clock) and then exfiltrating these signatures for future use. This was one of the reasons why we strongly advocated for the inclusion of server supplied nonces in the DPoP standard. \r\n \r\nPerhaps we can use a similar mechanism as in DPoP to include an optional server supplied nonce when generating the attestation (see Section 8 and 9 in DPoP for inspiration on supplying nonces as part of the interaction with the authorization and resource servers). The inclusion of  the nonce as part of a 200 response helps save on roundtrips (bar the first need for a nonce).\r\n",
           "createdAt": "2023-09-07T10:42:47Z",
           "updatedAt": "2023-09-07T10:42:47Z"
+        },
+        {
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "body": "todo: describe how a nonce request error look like",
+          "createdAt": "2023-10-23T20:32:12Z",
+          "updatedAt": "2023-10-23T20:32:12Z"
         }
       ]
     },
@@ -2621,25 +2628,33 @@
       "id": "PR_kwDOJaEkaM5S7FXz",
       "title": "Simplifies introduction",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/19",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tplooker",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Re-simplifies the introduction ",
       "createdAt": "2023-06-13T19:52:21Z",
-      "updatedAt": "2023-10-08T18:43:28Z",
+      "updatedAt": "2023-10-23T20:07:30Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "0d942cf0688ed99afccfb16c850bb5ff7b62bfc3",
       "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "headRefName": "tl/simplify-intro",
       "headRefOid": "2ff3c8cd02361c4d7471a873635da3c78419d4bd",
-      "closedAt": null,
+      "closedAt": "2023-10-23T20:07:30Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closed in favour of changes made in #52 ",
+          "createdAt": "2023-10-23T20:07:30Z",
+          "updatedAt": "2023-10-23T20:07:30Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOJaEkaM5Zg2lf",
@@ -3559,25 +3574,33 @@
       "id": "PR_kwDOJaEkaM5cMdpW",
       "title": "Replay prevention",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/49",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "paulbastian",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses # <!-- Issue # here -->\r\n\r\n## \ud83d\udcd1 Description\r\n<!-- Add a brief description of the pr -->\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
       "createdAt": "2023-10-08T15:09:52Z",
-      "updatedAt": "2023-10-08T18:47:37Z",
+      "updatedAt": "2023-10-23T09:14:33Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
       "headRepository": "paulbastian/draft-looker-oauth-attested-key-based-client-authentication",
       "headRefName": "replay-prevention",
       "headRefOid": "d5d5ffeb73f28d0a77b5955b78fa7008478823be",
-      "closedAt": null,
+      "closedAt": "2023-10-23T09:14:33Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closed in favor for #54 ",
+          "createdAt": "2023-10-23T09:14:33Z",
+          "updatedAt": "2023-10-23T09:14:33Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOJaEkaM5jJwGZ",
@@ -3654,6 +3677,146 @@
               "updatedAt": "2023-10-08T18:47:37Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2p0U",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:03:37Z",
+          "updatedAt": "2023-10-23T09:03:38Z",
+          "comments": [
+            {
+              "originalPosition": 8,
+              "body": "agreed to this in discussion with Tobias. The PR is from an old repo of mine and I will file a fresh one, sry for that",
+              "createdAt": "2023-10-23T09:03:38Z",
+              "updatedAt": "2023-10-23T09:03:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2qC_",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:04:08Z",
+          "updatedAt": "2023-10-23T09:04:08Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "I would leave this to native speakers and to a separate issue, please raise one if thats important to you",
+              "createdAt": "2023-10-23T09:04:08Z",
+              "updatedAt": "2023-10-23T09:04:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2qg9",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:05:08Z",
+          "updatedAt": "2023-10-23T09:05:08Z",
+          "comments": [
+            {
+              "originalPosition": 17,
+              "body": "This is a good idea, but I would like to keep this PR short",
+              "createdAt": "2023-10-23T09:05:08Z",
+              "updatedAt": "2023-10-23T09:05:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2q0S",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:05:48Z",
+          "updatedAt": "2023-10-23T09:05:48Z",
+          "comments": [
+            {
+              "originalPosition": 23,
+              "body": "I think the text is clear enough here",
+              "createdAt": "2023-10-23T09:05:48Z",
+              "updatedAt": "2023-10-23T09:05:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2q_c",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:06:09Z",
+          "updatedAt": "2023-10-23T09:06:10Z",
+          "comments": [
+            {
+              "originalPosition": 38,
+              "body": "agreed",
+              "createdAt": "2023-10-23T09:06:09Z",
+              "updatedAt": "2023-10-23T09:06:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2tXq",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:11:22Z",
+          "updatedAt": "2023-10-23T09:11:22Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "done in new PR",
+              "createdAt": "2023-10-23T09:11:22Z",
+              "updatedAt": "2023-10-23T09:11:22Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k2tqB",
+          "commit": {
+            "abbreviatedOid": "d5d5ffe"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T09:11:59Z",
+          "updatedAt": "2023-10-23T09:11:59Z",
+          "comments": [
+            {
+              "originalPosition": 39,
+              "body": "I don't see OIDC making it explicit about the nonce length either",
+              "createdAt": "2023-10-23T09:11:59Z",
+              "updatedAt": "2023-10-23T09:12:00Z"
+            }
+          ]
         }
       ]
     },
@@ -3662,21 +3825,21 @@
       "id": "PR_kwDOJaEkaM5cMd2Q",
       "title": "Update referenced rfcs",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/50",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "paulbastian",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses # <!-- Issue # here -->\r\n\r\n## \ud83d\udcd1 Description\r\n<!-- Add a brief description of the pr -->\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
       "createdAt": "2023-10-08T15:12:59Z",
-      "updatedAt": "2023-10-08T15:13:00Z",
+      "updatedAt": "2023-10-23T07:31:05Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
       "headRepository": "paulbastian/draft-looker-oauth-attested-key-based-client-authentication",
       "headRefName": "update-referenced-rfcs",
       "headRefOid": "290dbb93a54965e589a81a4d8506bb1d0cccbc84",
-      "closedAt": null,
+      "closedAt": "2023-10-23T07:31:05Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -3693,21 +3856,303 @@
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
-      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #15 \r\n\r\n## \ud83d\udcd1 Description\r\nAdd text on aal claim\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
+      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #15 \r\nCloses #29 \r\n\r\n## \ud83d\udcd1 Description\r\nAdd text on aal claim\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
       "createdAt": "2023-10-09T14:31:36Z",
-      "updatedAt": "2023-10-09T14:31:37Z",
+      "updatedAt": "2023-10-23T09:27:42Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
       "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "headRefName": "aal",
-      "headRefOid": "5972c6174e290f3594164648929d0e3453aefae6",
+      "headRefOid": "b58032e7dbb889bb27c17365f7c36987db43a4ba",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5k1yrW",
+          "commit": {
+            "abbreviatedOid": "5972c61"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T06:56:08Z",
+          "updatedAt": "2023-10-23T06:56:09Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\r\n8. The JWT MAY contain a \"aal\" (authenticator assurance level) claim that describes the attested assurance level of the Client Instance and the Client Instance Key. The claim value contains a URI that references a jurisdictional framework. Consumers of the client attestation are RECOMMENDED to evaluate this claim, if they intend to state an assurance level for their issued tokens themselves.\r\n```",
+              "createdAt": "2023-10-23T06:56:09Z",
+              "updatedAt": "2023-10-23T06:56:09Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 52,
+      "id": "PR_kwDOJaEkaM5dfsiC",
+      "title": "redesigning sequence diagram for introduction",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/52",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #28 \r\n\r\n## \ud83d\udcd1 Description\r\n<!-- Add a brief description of the pr -->\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
+      "createdAt": "2023-10-23T07:08:55Z",
+      "updatedAt": "2023-10-23T20:17:36Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "f3bcbb6d51e53179e5305a87ee77b94e0d05d6c6",
+      "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "pb/introduction",
+      "headRefOid": "cec19c496f893a2aa174859bd75c2d9057c37a3a",
+      "closedAt": "2023-10-23T20:17:36Z",
+      "mergedAt": "2023-10-23T20:17:36Z",
+      "mergedBy": "paulbastian",
+      "mergeCommit": {
+        "oid": "da0aa67d34880a59621d7a2715d08fbb9f40e60b"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5k79LP",
+          "commit": {
+            "abbreviatedOid": "53f3483"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-23T20:06:58Z",
+          "updatedAt": "2023-10-23T20:06:58Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k8ATu",
+          "commit": {
+            "abbreviatedOid": "53f3483"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-23T20:15:47Z",
+          "updatedAt": "2023-10-23T20:15:47Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 53,
+      "id": "PR_kwDOJaEkaM5dfyGb",
+      "title": "remove JWT ID from Client Attestation JWT",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/53",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses # <!-- Issue # here -->\r\n\r\n## \ud83d\udcd1 Description\r\n<!-- Add a brief description of the pr -->\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
+      "createdAt": "2023-10-23T07:25:56Z",
+      "updatedAt": "2023-10-23T18:22:41Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
+      "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "pb/remove-jti",
+      "headRefOid": "7fa2916a9c05756d36b93aa4d03765f0c4d746cc",
+      "closedAt": "2023-10-23T18:22:41Z",
+      "mergedAt": "2023-10-23T18:22:41Z",
+      "mergedBy": "tplooker",
+      "mergeCommit": {
+        "oid": "c984b2efd5177e8909d731552eefbe45bec5c9f9"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5k7JPV",
+          "commit": {
+            "abbreviatedOid": "7fa2916"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-23T18:22:35Z",
+          "updatedAt": "2023-10-23T18:22:35Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "id": "PR_kwDOJaEkaM5dgaPD",
+      "title": "replay attack prevention",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/54",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #49\r\nCloses #9 \r\n\r\n## \ud83d\udcd1 Description\r\nAdd security consideration for replay attack prevention and add nonce as optional value for PoP JWT\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
+      "createdAt": "2023-10-23T09:14:13Z",
+      "updatedAt": "2023-10-23T20:15:32Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "c6044dced77de65a5706bcafc7baec4587ba8201",
+      "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "pb/replay-attack-prevention",
+      "headRefOid": "307b46da9a75cd6e6c07622d90ccfe087dc9119f",
+      "closedAt": "2023-10-23T20:15:31Z",
+      "mergedAt": "2023-10-23T20:15:31Z",
+      "mergedBy": "tplooker",
+      "mergeCommit": {
+        "oid": "f3bcbb6d51e53179e5305a87ee77b94e0d05d6c6"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5k7Kpp",
+          "commit": {
+            "abbreviatedOid": "06f791f"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T18:26:06Z",
+          "updatedAt": "2023-10-23T18:26:07Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "Should we make this into a sub heading like `Replay Attack Detection`?",
+              "createdAt": "2023-10-23T18:26:06Z",
+              "updatedAt": "2023-10-23T18:26:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k79uZ",
+          "commit": {
+            "abbreviatedOid": "06f791f"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T20:08:29Z",
+          "updatedAt": "2023-10-23T20:08:29Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "```suggestion\r\n## Replay Attack Detection\r\n\r\nThe following mechanisms exist within this client authentication method in order to allow an authorization server to detect replay attacks for presented client attestation PoPs:\r\n```",
+              "createdAt": "2023-10-23T20:08:29Z",
+              "updatedAt": "2023-10-23T20:10:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k7-3k",
+          "commit": {
+            "abbreviatedOid": "29de252"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T20:11:40Z",
+          "updatedAt": "2023-10-23T20:11:41Z",
+          "comments": [
+            {
+              "originalPosition": 30,
+              "body": "```suggestion\r\n## Replay Attack Detection\r\n\r\nThe following mechanisms exist within this client authentication method in order to allow an authorization server to detect replay attacks for presented client attestation PoPs:\r\n```",
+              "createdAt": "2023-10-23T20:11:40Z",
+              "updatedAt": "2023-10-23T20:11:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k7_jT",
+          "commit": {
+            "abbreviatedOid": "29de252"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-10-23T20:13:40Z",
+          "updatedAt": "2023-10-23T20:13:40Z",
+          "comments": [
+            {
+              "originalPosition": 36,
+              "body": "```suggestion\r\nThe approach using a nonce explicitly provided by the authorization server gives stronger replay attack detection guarantees, however support by the authorization server is OPTIONAL to simplify mandatory implementation requirements. The \"jti\" method is mandatory and hence acts as a default fallback.\r\n```",
+              "createdAt": "2023-10-23T20:13:40Z",
+              "updatedAt": "2023-10-23T20:14:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5k8AI9",
+          "commit": {
+            "abbreviatedOid": "307b46d"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-23T20:15:16Z",
+          "updatedAt": "2023-10-23T20:15:16Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 55,
+      "id": "PR_kwDOJaEkaM5dkTHB",
+      "title": "update acknowledments",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/55",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses # <!-- Issue # here -->\r\n\r\n## \ud83d\udcd1 Description\r\n<!-- Add a brief description of the pr -->\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
+      "createdAt": "2023-10-23T19:12:05Z",
+      "updatedAt": "2023-10-23T20:07:12Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "c984b2efd5177e8909d731552eefbe45bec5c9f9",
+      "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "pb/acknowledgments",
+      "headRefOid": "dffbd0bf8cd6756d8d2d59e95ab8744918298cff",
+      "closedAt": "2023-10-23T20:07:12Z",
+      "mergedAt": "2023-10-23T20:07:12Z",
+      "mergedBy": "paulbastian",
+      "mergeCommit": {
+        "oid": "a0c84e9505d9d1750ee9a8aabbf3a268a21a3499"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5k78c4",
+          "commit": {
+            "abbreviatedOid": "dffbd0b"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-10-23T20:04:58Z",
+          "updatedAt": "2023-10-23T20:04:58Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
