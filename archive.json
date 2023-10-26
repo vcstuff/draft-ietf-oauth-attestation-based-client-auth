@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-10-24T00:43:06.302236+00:00",
+  "timestamp": "2023-10-26T00:42:01.587887+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -1484,6 +1484,38 @@
           "updatedAt": "2023-09-25T13:00:08Z"
         }
       ]
+    },
+    {
+      "number": 56,
+      "id": "I_kwDOJaEkaM50wRKQ",
+      "title": "Authorization code binding to client instance",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/56",
+      "state": "OPEN",
+      "author": "cobward",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Currently, section 5.2 \"Refresh token binding\"  gives requirements for how an authorization server must bind the client instance to the refresh token. Could we reuse this mechanism to bind the authorization code to the client instance in the case that client auth was performed in the authorization request?",
+      "createdAt": "2023-10-24T08:59:21Z",
+      "updatedAt": "2023-10-24T08:59:21Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 57,
+      "id": "I_kwDOJaEkaM50wo51",
+      "title": "Refresh token binding after attestation expiration",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/57",
+      "state": "OPEN",
+      "author": "cobward",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Currently section 5.2 states:\r\n> The client MUST also use the same key that was present in the \"cnf\" claim of the client attestation that was used for client authentication when the refresh token was issued.\r\n\r\nIn the case that the original client attestation JWT has expired, what should happen? If it is acceptable for the client to re-use the same key in the \"cnf\" field across attestation JWTs, then the client can easily generate a new attestation JWT with the same \"cnf\" key. But if the client needs to use a fresh \"cnf\" key, then I can think of three options:\r\n\r\n1. Define a flow which endorses the new \"cnf\" key with the old \"cnf\" key.\r\n2. Define a field in the client attestation JWT that contains a unique identifier for the client instance, and use that identifier to bind the refresh token to the client instance.\r\n3. Explicitly don't permit this in the specification, add text to the specification that makes it clear that the \"cnf\" key must stay the same across refreshed client attestations.\r\n\r\nMy preference would be for option 2.",
+      "createdAt": "2023-10-24T09:57:44Z",
+      "updatedAt": "2023-10-24T09:57:44Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
