@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-02T00:43:04.765008+00:00",
+  "timestamp": "2023-11-05T00:47:44.109293+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -988,7 +988,7 @@
       "labels": [],
       "body": "The current draft does not require the Client Attestation JWT and Client Attestation PoP JWT to have the `typ` JWS header parameter. Do you have any plans to define specific `typ` values for these JWTs?",
       "createdAt": "2023-07-16T07:29:52Z",
-      "updatedAt": "2023-09-06T06:42:02Z",
+      "updatedAt": "2023-11-03T19:48:08Z",
       "closedAt": null,
       "comments": [
         {
@@ -1011,6 +1011,13 @@
           "body": "Proposing `jwt-client-attestation` , `jwt-client-attestation-pop`",
           "createdAt": "2023-09-06T06:42:02Z",
           "updatedAt": "2023-09-06T06:42:02Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "JWS/JWT typ is a media type and based on https://datatracker.ietf.org/doc/html/rfc8725#name-use-explicit-typing I'd propose something like `oauth-client-attestation+jwt` and `oauth-client-attestation-pop+jwt`\r\n\r\nAnd FWIW you can kinda follow how DPoP registered and used the `application/dpop+jwt` media type to allow for explicit typing there https://www.rfc-editor.org/rfc/rfc9449.html or `application/at+jwt` from https://datatracker.ietf.org/doc/html/rfc9068 ",
+          "createdAt": "2023-11-03T19:48:07Z",
+          "updatedAt": "2023-11-03T19:48:07Z"
         }
       ]
     },
@@ -3969,7 +3976,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #15 \r\nCloses #29 \r\n\r\n## \ud83d\udcd1 Description\r\nAdd text on aal claim\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
       "createdAt": "2023-10-09T14:31:36Z",
-      "updatedAt": "2023-10-23T09:27:42Z",
+      "updatedAt": "2023-11-02T11:53:56Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
@@ -3980,7 +3987,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "body": "Supported here\r\nhttps://github.com/italia/eudi-wallet-it-docs/pull/155\r\n\r\nanyway it would be better define within the specs the grouping of the security capabilities according to the levels low, medium and high\r\n",
+          "createdAt": "2023-11-02T11:53:55Z",
+          "updatedAt": "2023-11-02T11:53:55Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOJaEkaM5k1yrW",
