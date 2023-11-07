@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-05T00:47:44.109293+00:00",
+  "timestamp": "2023-11-07T00:44:31.338646+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -74,7 +74,7 @@
       "comments": [
         {
           "author": "bc-pi",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "I would imagine the client is configured/registered with the AS and the jwks or jwks_uri of that client is where the verification keys are found. Basically the trust comes from the client configuration record at the AS (however that comes to be) and the keys are obtained from the client jwks/jwks_uri metadata.",
           "createdAt": "2023-05-10T17:58:41Z",
           "updatedAt": "2023-05-10T17:58:41Z"
@@ -95,7 +95,7 @@
         },
         {
           "author": "bc-pi",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Just to add a bit of context about the comment about RFC 7523 - it doesn't speak to this stuff in specific terms but does have some discussion in [Interoperability Considerations](https://datatracker.ietf.org/doc/html/rfc7523#section-5) that's pretty open ended. RFC7523 came before \"Dynamic Client Registration\" in RFC7591. But since then the metadata defined in RFC7591, and registered extensions to it, have come to imply a general data model for clients that is useful and used for authorization server implementations, even when the Dynamic Client Registration Protocol isn't in play. That includes jwks/jwks_uri metadata as the place for key(s). OIDC core kinda follows and pushes that pattern too and even 'profiles' RFC7591 somewhat with its definition of `private_key_jwt`.  So, regardless of how a client comes to be configured, the jwks or jwks_uri client metadata fields really have become the de facto for where/how client keys are obtained. I think this draft could acknowledge and/or provide some guidance in that direction. The AS would have one client config record for the whole client system and the verification keys for the attestation assertion come from the jwks or jwks_uri fields of that record. \"Trust\" comes from how that client record comes to be configured, but that how is out of scope of this draft. \r\n",
           "createdAt": "2023-05-11T18:28:31Z",
           "updatedAt": "2023-05-18T23:39:21Z"
@@ -612,7 +612,7 @@
       "labels": [],
       "body": "In the example in section 3.1.1. the issuer and the sub parameters should not be the same since the Wallet provider and the wallet instance are distinct entities. The private key in sole control of the wallet instance is referenced in the attestation while the subject refers to the Wallet Provider. \r\n\r\nMoreover, is the given example meant to be normative? I'm asking since in the example we find the JWS header parameter kid without any explanatory text about the key resolution mechanism allowed in the specs. (x5c, trust_chain, jwk)\r\n\r\n",
       "createdAt": "2023-05-30T13:22:00Z",
-      "updatedAt": "2023-10-09T09:14:20Z",
+      "updatedAt": "2023-11-07T00:05:49Z",
       "closedAt": null,
       "comments": [
         {
@@ -663,6 +663,55 @@
           "body": "I agreed that `sub` must have the same value of `client_id` but I didn't agreed that the specs should say which must be their value.\r\nI agree @TakahikoKawasaki 's comment [here](https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/32#issuecomment-1637028939) and I think that different implementations and models may distinguish the wallet instance from the wallet provider as different entities",
           "createdAt": "2023-10-09T09:14:20Z",
           "updatedAt": "2023-10-09T09:14:20Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> I agreed that sub must have the same value of client_id but I didn't agreed that the specs should say which must be their value.\r\nI agree @TakahikoKawasaki 's comment https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/32#issuecomment-1637028939 and I think that different implementations and models may distinguish the wallet instance from the wallet provider as different entities\r\n\r\n@peppelinux apologies we are struggling to understand what you mean here, can you possibly clarify?",
+          "createdAt": "2023-11-06T08:06:08Z",
+          "updatedAt": "2023-11-06T08:06:08Z"
+        },
+        {
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "body": "Ciao @tplooker \r\n\r\n`iss` is the entity that attests an instance, while `sub` is the instance.\r\nin my current implementation the first is the wallet provider, the latter is the End-User personal device.\r\n\r\nWe have found a good compromise with @paulbastian to not force in the specs a specific value, in a way to not force that `iss` value must be equal to `sub`. Wee agreed and everything seems fine to date.",
+          "createdAt": "2023-11-06T17:31:46Z",
+          "updatedAt": "2023-11-06T17:31:46Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks @peppelinux, if you dont mind, could you copy in an example of your client attestation JWT just so we can be 100% aligned, what I'm trying to understand is whether the sub value you are using is unique per user? Because our proposal above is simply for the sub value to be the client ID which for public clients would mean the same sub value across multiple instances of the same client.",
+          "createdAt": "2023-11-06T21:52:28Z",
+          "updatedAt": "2023-11-06T21:52:28Z"
+        },
+        {
+          "author": "TakahikoKawasaki",
+          "authorAssociation": "NONE",
+          "body": "@tplooker \r\nThe example of \"wallet instance attestation\" (which corresponds to the \"client attestation JWT\") in the [page 9](https://docs.google.com/presentation/d/1xcUyrPZbOyAS5-aSk189L0n7CMIZyuGI7jqLtmZfHPE/#slide=id.g6340a851bc_0_56) of \"[Discover the Italian Wallet](https://docs.google.com/presentation/d/1xcUyrPZbOyAS5-aSk189L0n7CMIZyuGI7jqLtmZfHPE/)\" indicates that the value of the `sub` is not a client application identifier but an identifer unique per user (per client instance key).\r\n\r\nTo be exact, the Italian technical document, \"[Wallet Instance Attestation](https://italia.github.io/eudi-wallet-it-docs/versione-corrente/en/wallet-instance-attestation.html)\", defines the `sub` as follows.\r\n\r\n> Thumbprint value of the JWK of the Wallet Instance for which the attestation is being issued.\r\n\r\nAs an implementer of an authorization server that plans to support the \"OAuth 2.0 Attestation-Based Client Authentication\" specification, I'm looking for a way to support both the cases at the same time where (1) `sub` is a client application identifier or (2) `sub` is a unique identifier per client instance key.",
+          "createdAt": "2023-11-06T23:33:30Z",
+          "updatedAt": "2023-11-06T23:33:30Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks @TakahikoKawasaki can you elaborate on the usecase/rationale for why the client attestation needs to include a client instance (or user unique) identifier in the attestation? For example the reason the attestation must include a client_id somewhere is because the authorisation server needs to know which client is making the request, but generally as is the case with public clients, the authorisation server doesn't care which specific instance is making the request. ",
+          "createdAt": "2023-11-06T23:37:52Z",
+          "updatedAt": "2023-11-06T23:37:52Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Related to #57 ",
+          "createdAt": "2023-11-06T23:39:41Z",
+          "updatedAt": "2023-11-06T23:39:41Z"
+        },
+        {
+          "author": "TakahikoKawasaki",
+          "authorAssociation": "NONE",
+          "body": "@tplooker \r\nTo be honest, I don't care about the rationale behind the value of the `sub` claim in the \"Client Attestation JWT\". Because authorization server implementations can know the client application identifier from the `iss` claim in \"Client Attestation **PoP** JWT\", the value of the `sub` claim in the \"Client Attestation JWT\" is not necessary to identify the client application.\r\n\r\nIf the specification says \"the `sub` claim in the Client Attestation JWT must be identical to the client application identifier\", authorization server implementations must reject requests from Italian wallets. On the contrary, if the specification says \"the `sub` claim in the Client Attestation JWT must be the JWK thumbprint of the client instance key\", authorization server implementations must reject requests from other wallets (e.g. IDunion wallets?) that set the client application identifier to the `sub` claim.\r\n\r\nGeneral-purpose authorization server implementations want to accept both requests at runtime, or at least want to be (statically) configurable to accept either of the two patterns. A simple resolution would be to define the value of the `sub` claim of the Client Attestation JWT as follows.\r\n\r\n- The client identifier or the JWK thumbprint of the client instance key\r\n\r\n",
+          "createdAt": "2023-11-07T00:05:49Z",
+          "updatedAt": "2023-11-07T00:05:49Z"
         }
       ]
     },
@@ -770,7 +819,7 @@
       "id": "I_kwDOJaEkaM5nyl4B",
       "title": "Reanme Grant Type to JWT-PoP?",
       "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/17",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "paulbastian",
       "authorAssociation": "COLLABORATOR",
       "assignees": [
@@ -779,8 +828,8 @@
       "labels": [],
       "body": "Issue raised by Kristina:\r\nI also perceive this draft as a PoP version of urn:ietf:params:oauth:grant-type:jwt-bearer, would it make sense to make that more intuitive and explicit - like urn:ietf:params:oauth:grant-type:jwt-pop? - this can be another issue\r\n\r\n_Originally posted by @Sakurann in https://github.com/vcstuff/draft-looker-oauth-attested-key-based-client-authentication/pull/11#pullrequestreview-1451679914_\r\n            ",
       "createdAt": "2023-06-05T08:59:41Z",
-      "updatedAt": "2023-10-08T15:22:24Z",
-      "closedAt": null,
+      "updatedAt": "2023-11-06T08:00:33Z",
+      "closedAt": "2023-11-06T08:00:33Z",
       "comments": [
         {
           "author": "tplooker",
@@ -1165,7 +1214,7 @@
       "labels": [],
       "body": "[OpenID Connect Dynamic Client Registration 1.0](https://openid.net/specs/openid-connect-registration-1_0.html), [Section 2. Client Metadata](https://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata), defines the `token_endpoint_auth_signing_alg` client metadata as follows.\r\n\r\n>OPTIONAL. [JWS](https://openid.net/specs/openid-connect-registration-1_0.html#JWS) [JWS] `alg` algorithm [[JWA]](https://openid.net/specs/openid-connect-registration-1_0.html#JWA) that MUST be used for signing the JWT [[JWT]](https://openid.net/specs/openid-connect-registration-1_0.html#JWT) used to authenticate the Client at the Token Endpoint for the `private_key_jwt` and `client_secret_jwt` authentication methods. All Token Requests using these authentication methods from this Client MUST be rejected, if the JWT is not signed with this algorithm. Servers SHOULD support `RS256`. The value `none` MUST NOT be used. The default, if omitted, is that any algorithm supported by the OP and the RP MAY be used.\r\n\r\nShould server-side implementations of the `attest_jwt_client_auth` client authentication method take the client metadata into consideration? To be concrete, should server-side implementations reject requests when the Client Attestation PoP JWT is not signed with the algorithm specified by the client metadata if the metadata is set, or may server-side implementations ignore the client metadata when processing the `attest_jwt_client_auth` client authentication method?",
       "createdAt": "2023-07-21T10:56:23Z",
-      "updatedAt": "2023-09-06T06:32:05Z",
+      "updatedAt": "2023-11-06T07:59:13Z",
       "closedAt": null,
       "comments": [
         {
@@ -1188,6 +1237,13 @@
           "body": "We would also need to clarify that the signing algorithm used for the attestation JWT and PoP JWT do not need to be the same however both would need to be permitted for the client making the request to the authorization server.",
           "createdAt": "2023-09-06T06:32:05Z",
           "updatedAt": "2023-09-06T06:32:05Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Considering this more I think it is safer to have a new seperate metadata element for signalling support algorithms for this client authentication mechanism.",
+          "createdAt": "2023-11-06T07:59:13Z",
+          "updatedAt": "2023-11-06T07:59:13Z"
         }
       ]
     },
@@ -1487,7 +1543,7 @@
       "labels": [],
       "body": "Even if remote, there is the possibility that an implementation re-uses the same cryptographic keys for different scopes.\r\n\r\nthe PoP JWT could be used with the same cryptograhic key attested in more than a single attestation and therefore be replicated for different endpoints/audience\r\n\r\nWhat do you think about getting the `ath` claim inside the DPoP token as requested?\r\n\r\nIn this way, a DPoP token cannot be replicated when the key that proves possession is the same within different attestations.\r\n\r\nEven if DPoP specs defines `ath` in relation to an access token, may we consider that any kind of JWT could represent an access token, in relation of its scope, the flow where it is used and its usage in general?\r\n\r\nThen, could we provide a binding of the PoP to a specific attestation where the possession aims to be proved?",
       "createdAt": "2023-09-25T00:16:42Z",
-      "updatedAt": "2023-11-01T17:04:13Z",
+      "updatedAt": "2023-11-06T07:50:04Z",
       "closedAt": null,
       "comments": [
         {
@@ -1517,6 +1573,13 @@
           "body": "> Do you propose a new claim in the Client Attestation PoP JWT thats value is the hash of the corresponding Client Attestation JWT?\r\n\r\nYes Paul. That is the idea. ",
           "createdAt": "2023-11-01T17:04:13Z",
           "updatedAt": "2023-11-01T17:04:13Z"
+        },
+        {
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "body": "We will explore this, but initially it does not seem like a bad idea",
+          "createdAt": "2023-11-06T07:50:03Z",
+          "updatedAt": "2023-11-06T07:50:03Z"
         }
       ]
     },
@@ -1532,7 +1595,7 @@
       "labels": [],
       "body": "Currently, section 5.2 \"Refresh token binding\"  gives requirements for how an authorization server must bind the client instance to the refresh token. Could we reuse this mechanism to bind the authorization code to the client instance in the case that client auth was performed in the authorization request?",
       "createdAt": "2023-10-24T08:59:21Z",
-      "updatedAt": "2023-10-31T19:23:36Z",
+      "updatedAt": "2023-11-06T13:49:21Z",
       "closedAt": null,
       "comments": [
         {
@@ -1541,6 +1604,20 @@
           "body": "@cobward do you mean in the event we are using something like a signed PAR request?",
           "createdAt": "2023-10-31T19:23:36Z",
           "updatedAt": "2023-10-31T19:23:36Z"
+        },
+        {
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "body": "If I understand you correctly, you get a similar set of assurances like with PKCE, so I'm unsure if we want to duplicate this mechanism.",
+          "createdAt": "2023-11-06T07:42:59Z",
+          "updatedAt": "2023-11-06T07:42:59Z"
+        },
+        {
+          "author": "cobward",
+          "authorAssociation": "NONE",
+          "body": "> @cobward do you mean in the event we are using something like a signed PAR request?\r\n\r\nI'm not sure that it only applies to signed PAR request. I mean just generally that if client authentication is required at the authorization endpoint then the same requirements of binding the client instance to the authorization code still apply.\r\n\r\n> If I understand you correctly, you get a similar set of assurances like with PKCE, so I'm unsure if we want to duplicate this mechanism.\r\n\r\nIf that is the case then would it make sense to add text to that effect? Something along the lines of:\r\n\r\n_The Authorization Server is not required to bind the client instance to the authorization code, as PKCE provides sufficient mitigation of security risks._\r\n",
+          "createdAt": "2023-11-06T13:49:21Z",
+          "updatedAt": "2023-11-06T13:49:21Z"
         }
       ]
     },
@@ -1556,7 +1633,7 @@
       "labels": [],
       "body": "Currently section 5.2 states:\r\n> The client MUST also use the same key that was present in the \"cnf\" claim of the client attestation that was used for client authentication when the refresh token was issued.\r\n\r\nIn the case that the original client attestation JWT has expired, what should happen? If it is acceptable for the client to re-use the same key in the \"cnf\" field across attestation JWTs, then the client can easily generate a new attestation JWT with the same \"cnf\" key. But if the client needs to use a fresh \"cnf\" key, then I can think of three options:\r\n\r\n1. Define a flow which endorses the new \"cnf\" key with the old \"cnf\" key.\r\n2. Define a field in the client attestation JWT that contains a unique identifier for the client instance, and use that identifier to bind the refresh token to the client instance.\r\n3. Explicitly don't permit this in the specification, add text to the specification that makes it clear that the \"cnf\" key must stay the same across refreshed client attestations.\r\n\r\nMy preference would be for option 2.",
       "createdAt": "2023-10-24T09:57:44Z",
-      "updatedAt": "2023-10-31T19:22:17Z",
+      "updatedAt": "2023-11-06T14:53:14Z",
       "closedAt": null,
       "comments": [
         {
@@ -1600,6 +1677,37 @@
           "body": "> Do we? I had assumed the AS identifies the client by the sub value. I don't see a need to identify a client instance.\r\n\r\nWell the current language doesn't actually guarantee that the AS can track the client instance (which is a good thing IMO), as the instance can in many common cases, rotate the keys it uses in between fetching tokens. But in the event a client instance is exchanging a refresh token for a fresh access token and potentially another refresh token, the client instance must authenticate using a client attestation JWT with the same key in the cnf claim that was in the original attestation used when the refresh token was obtained. This ensures one client instance can't use another client instances refresh token. So in this case the AS can track that the client instance who obtained the refresh token is the client instance now requesting to exchange it for a new access token, which is desired from a security perspective.\r\n\r\n> This just makes explicit the tracking of client instances that already existed through the requirement for the \"cnf\" key to stay the same over attestations.\r\n\r\nAs I said above in response to Torsten's point, using the key instead of an explicit claim means a single client instance could actually use multiple keys over time meaning the AS can't track the client instance across all of those interactions. The concern if we make an explicit claim in the client attestation JWT for identifying the client instance, is that implementations won't rotate this identifier over time thus meaning the instance would be tracked.\r\n\r\n> the forth option is to have long living client attestations, which in my opinion is no problem\r\n\r\nIronically if your goal is to reduce the ability of the AS to track the client instance over time, this option will in fact enable that as the attestation itself becomes the tracking vector.\r\n\r\n> Isn't the AS identifying the client also by the refresh token itself?\r\n\r\nAgreed, the additional requirement of requiring the same client authentication method with the same key just means that obtaining the refresh token alone is not enough for another instance to be able to exercise the refresh token, it doesn't materially change the ability for the AS to track the client instance because as you highlight the refresh token itself creates the same possibility for correlation.",
           "createdAt": "2023-10-31T19:22:17Z",
           "updatedAt": "2023-10-31T19:22:17Z"
+        },
+        {
+          "author": "cobward",
+          "authorAssociation": "NONE",
+          "body": "> A: the wallet initially gets one client attestation and uses the cnf key over a longer period to bind a sequence of refresh tokens to it. -> similar to option 4?\r\n\r\nI think this is basically my option 3.\r\n\r\n> Well the current language doesn't actually guarantee that the AS can track the client instance (which is a good thing IMO), as the instance can in many common cases, rotate the keys it uses in between fetching tokens.\r\n\r\n> a single client instance could actually use multiple keys over time meaning the AS can't track the client instance across all of those interactions\r\n\r\nUnless there is a mechanism to issue a refresh token that I am not aware of, it is not possible to rotate keys according to the current language. The spec states:\r\n\r\n> Authorization servers issuing a refresh token in response to a token request using the \"urn:ietf:params:oauth:client-assertion-type:jwt-client-attestation\" client authentication method **MUST bind the refresh token to the client instance**, and NOT just the client as specified in section 6 {{RFC6749}}. To prove this binding, **the client instance MUST authenticate itself to the authorization server when refreshing an access token** using the \"urn:ietf:params:oauth:client-assertion-type:jwt-client-attestation\" authentication method. The client **MUST also use the same key** that was present in the \"cnf\" claim of the client attestation that was used for client authentication when the refresh token was issued.\r\n\r\nThis is what I mean by \"_This just makes explicit the tracking of client instances that already existed through the requirement for the \"cnf\" key to stay the same over attestations._\"",
+          "createdAt": "2023-11-06T14:52:08Z",
+          "updatedAt": "2023-11-06T14:53:14Z"
+        }
+      ]
+    },
+    {
+      "number": 58,
+      "id": "I_kwDOJaEkaM51372F",
+      "title": "Extend the draft to define a new grant type",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/58",
+      "state": "OPEN",
+      "author": "Sakurann",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Can this draft be extended to define a new grant type `urn:ietf:params:oauth:client-assertion-type:jwt-client-attestation` where a sender-constrained JWT can be used to request an Access Token? for example, i think it would be useful in use-cases like catena-x https://github.com/eclipse-tractusx/identity-trust/issues/34 (cc @c2bo)\r\nInspiration for the suggestion is https://www.rfc-editor.org/rfc/rfc7523, which defined `urn:ietf:params:oauth:grant-type:jwt-bearer` both for client authentication and a new grant type.",
+      "createdAt": "2023-11-05T02:21:14Z",
+      "updatedAt": "2023-11-06T07:59:48Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "@Sakurann can you please elaborate on the usecase here, the attached issue doesn't provide any context.",
+          "createdAt": "2023-11-06T07:59:48Z",
+          "updatedAt": "2023-11-06T07:59:48Z"
         }
       ]
     }
