@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-07T00:44:31.338646+00:00",
+  "timestamp": "2023-11-09T00:43:49.190735+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -128,7 +128,7 @@
       "labels": [],
       "body": "The text currently says:\r\n> The JWT MUST contain a \"sub\" (subject) claim with a value corresponding to the \"client_id\" of the OAuth client.\r\n\r\nthe thing is.. when there could been no pre-existing relationship between the issuer and the wallet. probably worth noting that `sub` (and `client_id` value) can be self-attested by the wallet frontend",
       "createdAt": "2023-05-13T16:58:41Z",
-      "updatedAt": "2023-09-06T06:57:53Z",
+      "updatedAt": "2023-11-08T00:22:50Z",
       "closedAt": null,
       "comments": [
         {
@@ -305,6 +305,13 @@
           "body": "Related to #12 and #31",
           "createdAt": "2023-09-06T06:57:52Z",
           "updatedAt": "2023-09-06T06:57:52Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Related discussion also occuring in #13 ",
+          "createdAt": "2023-11-08T00:22:50Z",
+          "updatedAt": "2023-11-08T00:22:50Z"
         }
       ]
     },
@@ -612,7 +619,7 @@
       "labels": [],
       "body": "In the example in section 3.1.1. the issuer and the sub parameters should not be the same since the Wallet provider and the wallet instance are distinct entities. The private key in sole control of the wallet instance is referenced in the attestation while the subject refers to the Wallet Provider. \r\n\r\nMoreover, is the given example meant to be normative? I'm asking since in the example we find the JWS header parameter kid without any explanatory text about the key resolution mechanism allowed in the specs. (x5c, trust_chain, jwk)\r\n\r\n",
       "createdAt": "2023-05-30T13:22:00Z",
-      "updatedAt": "2023-11-07T00:05:49Z",
+      "updatedAt": "2023-11-08T01:09:27Z",
       "closedAt": null,
       "comments": [
         {
@@ -712,6 +719,34 @@
           "body": "@tplooker \r\nTo be honest, I don't care about the rationale behind the value of the `sub` claim in the \"Client Attestation JWT\". Because authorization server implementations can know the client application identifier from the `iss` claim in \"Client Attestation **PoP** JWT\", the value of the `sub` claim in the \"Client Attestation JWT\" is not necessary to identify the client application.\r\n\r\nIf the specification says \"the `sub` claim in the Client Attestation JWT must be identical to the client application identifier\", authorization server implementations must reject requests from Italian wallets. On the contrary, if the specification says \"the `sub` claim in the Client Attestation JWT must be the JWK thumbprint of the client instance key\", authorization server implementations must reject requests from other wallets (e.g. IDunion wallets?) that set the client application identifier to the `sub` claim.\r\n\r\nGeneral-purpose authorization server implementations want to accept both requests at runtime, or at least want to be (statically) configurable to accept either of the two patterns. A simple resolution would be to define the value of the `sub` claim of the Client Attestation JWT as follows.\r\n\r\n- The client identifier or the JWK thumbprint of the client instance key\r\n\r\n",
           "createdAt": "2023-11-07T00:05:49Z",
           "updatedAt": "2023-11-07T00:05:49Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> To be honest, I don't care about the rationale behind the value of the sub claim in the \"Client Attestation JWT\". Because authorization server implementations can know the client application identifier from the iss claim in \"Client Attestation PoP JWT\", the value of the sub claim in the \"Client Attestation JWT\" is not necessary to identify the client application.\r\n\r\nI understand the AS can use the PoP to identify who the client is, but without a client_id in the client attestation its not really a client attestation instead its just a key attestation. Perhaps @peppelinux can you elaborate on why the sub value needs to be a JWK thumbprint in your implementation what does this enable?",
+          "createdAt": "2023-11-07T04:13:57Z",
+          "updatedAt": "2023-11-07T04:13:57Z"
+        },
+        {
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "body": "@tplooker \r\n\r\nThe `cnf.jwk` represents the identifier of the wallet instance. A wallet instance may have more than a private key and more than a single wallet instance attestation. Even using `iss` == `sub` the wallet instance attestation can be implicitly identified with the `cnf.jwk`.\r\n\r\nThe value of the `sub` claim is something to uniquely identify the subject, we should not mandate a specific value type but the only requirement to have unique value per wallet instances, while `iss` == `sub` == `client_id` doesn't make sense to me.\r\n\r\nI agree with Taka and at the same time I foudn a compromise with @paulbastian and at the end if `iss` == `sub` this will be ignored by the implementations because it doesn't bring any value, sense or benefit. It would be then better to remove `client_id` and `sub`. Anyway if this compromise to ignore the sub value helps the interop, I can buy but in Italy we're prone to distinguish the issuer from the subject because they are distinct entities, the first is the wallet instance attestation issuer, the latter is the wallet instance.",
+          "createdAt": "2023-11-07T11:44:18Z",
+          "updatedAt": "2023-11-07T23:49:29Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks for the explanation @peppelinux.\r\n\r\n> The value of the sub claim is something to uniquely identify the subject, we should not mandate a specific value type but the only requirement to have unique value per wallet instances, while iss == sub == client_id doesn't make sense to me.\r\n\r\nI think perhaps here is where there is a disconnect. At present in the specification, the attestation is called a \"client attestation\" not \"user attestation\" which is because the issuer of the attestation is a client and the subject is an instance that particular client.\r\n\r\nIf we make the change proposed in #32 then the issuer of the client attestation is no longer necessarily the client (or client backend) instead it could be any party that the authorization server trusts to make attestations about clients. However in that model the subject of the attestation is still always a client instance not a user.\r\n\r\nSo with the adoption of #32 the iss will no longer be the client ID meaning instead the client_id must feature somewhere else in the client attestation, otherwise the authorization server has no way to validate for which client an attestation it is presented has been produced for. The most practical change I see here would be for us to require the `sub` value become the client_id of the client being attested.\r\n\r\nIn short with the change proposed above the iss value could be any string but the sub would then have to be the client_id, would that work for your implementation? For a concrete example see here https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/32#issuecomment-1637028939 as proposed by @TakahikoKawasaki ",
+          "createdAt": "2023-11-08T00:15:08Z",
+          "updatedAt": "2023-11-08T00:18:51Z"
+        },
+        {
+          "author": "TakahikoKawasaki",
+          "authorAssociation": "NONE",
+          "body": "The following table summarizes the current spec, the Italian ecosystem, and possible compromises.\r\n\r\n| No. | Client Attestation JWT `iss` | Client Attestation JWT `sub` | Client Attestation JWT, new claim | Client Attestation PoP JWT `iss` | Memo |\r\n|:-:|:--|:--|:--|:--|:--|\r\n| 1 | Attester | Client ID | N/A | Client ID | The current spec. |\r\n| 2 | Client ID | Client ID | N/A | Client ID | The example in the current spec (excerpted in #32). My understanding is that the example is misleading because the current spec conceptually treats the attester and the client as different things. |\r\n| 3 | Attester | Thumbprint of Client Instance Key | N/A | Client ID | The Italian ecosystem |\r\n| 4 | Attester | Any | N/A | Client ID | Compromise A |\r\n| 5 | Attester | Client ID or Thumbprint of Client Instance Key | N/A | Client ID | Compromise B |\r\n| 6 | Attester | Client ID | Thumbprint of Client Instance Key | Client ID | Compromise C |\r\n| 7 | Attester | Thumbprint of Client Instance Key | Client ID | Client ID | Compromise D |\r\n| 8 | Attester | Any | Client ID | Client ID | Compromise E |\r\n| 9 | Attester | Any | Thumbprint of Client Instance Key | Client ID | Compromise F |\r\n| 10 | Attester | Client ID or Thumbprint of Client Instance Key | Client ID | Client ID | Compromise G |\r\n| 11 | Attester | Client ID or Thumbprint of Client Instance Key | Thumbprint of Client Instance Key | Client ID | Compromise H |\r\n",
+          "createdAt": "2023-11-08T01:09:27Z",
+          "updatedAt": "2023-11-08T01:09:27Z"
         }
       ]
     },
@@ -1214,7 +1249,7 @@
       "labels": [],
       "body": "[OpenID Connect Dynamic Client Registration 1.0](https://openid.net/specs/openid-connect-registration-1_0.html), [Section 2. Client Metadata](https://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata), defines the `token_endpoint_auth_signing_alg` client metadata as follows.\r\n\r\n>OPTIONAL. [JWS](https://openid.net/specs/openid-connect-registration-1_0.html#JWS) [JWS] `alg` algorithm [[JWA]](https://openid.net/specs/openid-connect-registration-1_0.html#JWA) that MUST be used for signing the JWT [[JWT]](https://openid.net/specs/openid-connect-registration-1_0.html#JWT) used to authenticate the Client at the Token Endpoint for the `private_key_jwt` and `client_secret_jwt` authentication methods. All Token Requests using these authentication methods from this Client MUST be rejected, if the JWT is not signed with this algorithm. Servers SHOULD support `RS256`. The value `none` MUST NOT be used. The default, if omitted, is that any algorithm supported by the OP and the RP MAY be used.\r\n\r\nShould server-side implementations of the `attest_jwt_client_auth` client authentication method take the client metadata into consideration? To be concrete, should server-side implementations reject requests when the Client Attestation PoP JWT is not signed with the algorithm specified by the client metadata if the metadata is set, or may server-side implementations ignore the client metadata when processing the `attest_jwt_client_auth` client authentication method?",
       "createdAt": "2023-07-21T10:56:23Z",
-      "updatedAt": "2023-11-06T07:59:13Z",
+      "updatedAt": "2023-11-08T14:16:15Z",
       "closedAt": null,
       "comments": [
         {
@@ -1244,6 +1279,13 @@
           "body": "Considering this more I think it is safer to have a new seperate metadata element for signalling support algorithms for this client authentication mechanism.",
           "createdAt": "2023-11-06T07:59:13Z",
           "updatedAt": "2023-11-06T07:59:13Z"
+        },
+        {
+          "author": "panva",
+          "authorAssociation": "NONE",
+          "body": "I believe the re-use of both AS discovery `token_endpoint_auth_signing_alg_values_supported` and Client `token_endpoint_auth_signing_alg` is the right way to move forward and needs to be mentioned in the document.\r\n\r\n---\r\n\r\n> token_endpoint_auth_signing_alg_values_supported\r\n\r\nJSON array containing a list of the JWS signing algorithms supported by the token endpoint for the signature on the JWT used to authenticate the client at the token endpoint\r\n\r\nThis fits.\r\n\r\n--- \r\n\r\n> token_endpoint_auth_signing_alg\r\n\r\nJWS alg algorithm that MUST be used for signing the JWT used to authenticate the Client at the Token Endpoint for the private_key_jwt and client_secret_jwt authentication methods\r\n\r\nThis doesn't fit but only needs an updated description.",
+          "createdAt": "2023-11-08T14:13:54Z",
+          "updatedAt": "2023-11-08T14:16:15Z"
         }
       ]
     },
@@ -1710,6 +1752,22 @@
           "updatedAt": "2023-11-06T07:59:48Z"
         }
       ]
+    },
+    {
+      "number": 59,
+      "id": "I_kwDOJaEkaM52OUZK",
+      "title": "Using a server provided nonce to limit the lifetime of a Client Attestation PoP JWT",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/59",
+      "state": "OPEN",
+      "author": "pmhsfelix",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Following up on the conversations some of us had after IIW (see https://github.com/openid/OpenID4VCI/issues/71#issuecomment-1719631991), this issue proposes the addition of a server provided nonce mechanism to limit the lifetime of a Client Attestation PoP JWT, similar to the [DPoP nonce mechanism](https://www.rfc-editor.org/rfc/rfc9449.html#name-authorization-server-provid).\r\n\r\nThis relates to https://github.com/openid/OpenID4VCI/issues/71, however the required changes need to be addressed on the attestation spec and not on the VCI spec.\r\n\r\nI'm currently working on a PR to add this. ",
+      "createdAt": "2023-11-08T12:14:18Z",
+      "updatedAt": "2023-11-08T12:14:18Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
