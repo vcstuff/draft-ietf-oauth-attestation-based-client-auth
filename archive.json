@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-09T00:43:49.190735+00:00",
+  "timestamp": "2023-11-12T00:48:01.489843+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -619,7 +619,7 @@
       "labels": [],
       "body": "In the example in section 3.1.1. the issuer and the sub parameters should not be the same since the Wallet provider and the wallet instance are distinct entities. The private key in sole control of the wallet instance is referenced in the attestation while the subject refers to the Wallet Provider. \r\n\r\nMoreover, is the given example meant to be normative? I'm asking since in the example we find the JWS header parameter kid without any explanatory text about the key resolution mechanism allowed in the specs. (x5c, trust_chain, jwk)\r\n\r\n",
       "createdAt": "2023-05-30T13:22:00Z",
-      "updatedAt": "2023-11-08T01:09:27Z",
+      "updatedAt": "2023-11-09T20:33:52Z",
       "closedAt": null,
       "comments": [
         {
@@ -737,9 +737,9 @@
         {
           "author": "tplooker",
           "authorAssociation": "COLLABORATOR",
-          "body": "Thanks for the explanation @peppelinux.\r\n\r\n> The value of the sub claim is something to uniquely identify the subject, we should not mandate a specific value type but the only requirement to have unique value per wallet instances, while iss == sub == client_id doesn't make sense to me.\r\n\r\nI think perhaps here is where there is a disconnect. At present in the specification, the attestation is called a \"client attestation\" not \"user attestation\" which is because the issuer of the attestation is a client and the subject is an instance that particular client.\r\n\r\nIf we make the change proposed in #32 then the issuer of the client attestation is no longer necessarily the client (or client backend) instead it could be any party that the authorization server trusts to make attestations about clients. However in that model the subject of the attestation is still always a client instance not a user.\r\n\r\nSo with the adoption of #32 the iss will no longer be the client ID meaning instead the client_id must feature somewhere else in the client attestation, otherwise the authorization server has no way to validate for which client an attestation it is presented has been produced for. The most practical change I see here would be for us to require the `sub` value become the client_id of the client being attested.\r\n\r\nIn short with the change proposed above the iss value could be any string but the sub would then have to be the client_id, would that work for your implementation? For a concrete example see here https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/32#issuecomment-1637028939 as proposed by @TakahikoKawasaki ",
+          "body": "Thanks for the explanation @peppelinux.\r\n\r\n> The value of the sub claim is something to uniquely identify the subject, we should not mandate a specific value type but the only requirement to have unique value per wallet instances, while iss == sub == client_id doesn't make sense to me.\r\n\r\nI think perhaps here is where there is a disconnect. At present in the specification, the attestation is called a \"client attestation\" not \"user attestation\" which is because the issuer of the attestation is a client and the subject is an instance that particular client.\r\n\r\nIf we make the change proposed in #32 then the issuer of the client attestation is no longer necessarily the client (or client backend) instead it could be any party that the authorization server trusts to make attestations about clients. However in that model the subject of the attestation is still always a client instance not a user.\r\n\r\nSo with the adoption of #32 the iss will no longer be the client ID meaning instead the client_id must feature somewhere else in the client attestation, otherwise the authorization server has no way to validate for which client an attestation it is presented has been produced for. The most practical change I see here would be for us to require the `sub` value to be the client_id of the client being attested.\r\n\r\nIn short with the change proposed above the iss value could be any string but the sub would then still have to be the client_id, would that work for your implementation? For a concrete example see here https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/32#issuecomment-1637028939 as proposed by @TakahikoKawasaki ",
           "createdAt": "2023-11-08T00:15:08Z",
-          "updatedAt": "2023-11-08T00:18:51Z"
+          "updatedAt": "2023-11-09T20:29:33Z"
         },
         {
           "author": "TakahikoKawasaki",
@@ -747,6 +747,13 @@
           "body": "The following table summarizes the current spec, the Italian ecosystem, and possible compromises.\r\n\r\n| No. | Client Attestation JWT `iss` | Client Attestation JWT `sub` | Client Attestation JWT, new claim | Client Attestation PoP JWT `iss` | Memo |\r\n|:-:|:--|:--|:--|:--|:--|\r\n| 1 | Attester | Client ID | N/A | Client ID | The current spec. |\r\n| 2 | Client ID | Client ID | N/A | Client ID | The example in the current spec (excerpted in #32). My understanding is that the example is misleading because the current spec conceptually treats the attester and the client as different things. |\r\n| 3 | Attester | Thumbprint of Client Instance Key | N/A | Client ID | The Italian ecosystem |\r\n| 4 | Attester | Any | N/A | Client ID | Compromise A |\r\n| 5 | Attester | Client ID or Thumbprint of Client Instance Key | N/A | Client ID | Compromise B |\r\n| 6 | Attester | Client ID | Thumbprint of Client Instance Key | Client ID | Compromise C |\r\n| 7 | Attester | Thumbprint of Client Instance Key | Client ID | Client ID | Compromise D |\r\n| 8 | Attester | Any | Client ID | Client ID | Compromise E |\r\n| 9 | Attester | Any | Thumbprint of Client Instance Key | Client ID | Compromise F |\r\n| 10 | Attester | Client ID or Thumbprint of Client Instance Key | Client ID | Client ID | Compromise G |\r\n| 11 | Attester | Client ID or Thumbprint of Client Instance Key | Thumbprint of Client Instance Key | Client ID | Compromise H |\r\n",
           "createdAt": "2023-11-08T01:09:27Z",
           "updatedAt": "2023-11-08T01:09:27Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks @TakahikoKawasaki for your write up. @peppelinux if the main intent of your use-case is to support identifying the client instance, then I believe as you highlight above that can be accomplished via the `cnf` claim. Therefore we can leave the `sub` claim as the client_id value. Will that work for your deployment?\r\n\r\n",
+          "createdAt": "2023-11-09T20:33:52Z",
+          "updatedAt": "2023-11-09T20:33:52Z"
         }
       ]
     },
@@ -1152,7 +1159,7 @@
       "labels": [],
       "body": "\"Client Backend\" in the specification should be replaced with \"Client Attester\".\r\n\r\n\"Client Backend\" creates the impression that both the client and the system issuing the attestation for the client are managed by the same entity. While it is possible for actual deployments to be structured in this manner, it appears that the specification intends to treat them as separate entities.",
       "createdAt": "2023-07-16T08:52:40Z",
-      "updatedAt": "2023-09-06T06:52:18Z",
+      "updatedAt": "2023-11-09T22:32:18Z",
       "closedAt": null,
       "comments": [
         {
@@ -1182,6 +1189,27 @@
           "body": "add text on iss and sub",
           "createdAt": "2023-09-06T06:52:17Z",
           "updatedAt": "2023-09-06T06:52:17Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The `iss` of the Client Attestation JWT should identify the issuer of the Client Attestation JWT. When it's the client backend (which I think will be a common case), the `iss` value should be the client id value and the verification key should be found from the `jwks_uri` or `jwks_uri` field of that client (however that client info comes to exist with the AS). When the Client Attestation JWT is issued by some attestation service, the `iss` value should identify that service. And the AS needs to trust the service for this purpose and know how to find verification keys for it. \r\n\r\nThe `sub` of the Client Attestation JWT should be the client id value. ",
+          "createdAt": "2023-11-09T22:07:39Z",
+          "updatedAt": "2023-11-09T22:07:39Z"
+        },
+        {
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> The `iss` of the Client Attestation JWT should identify the issuer of the Client Attestation JWT. When it's the client backend (which I think will be a common case), the `iss` value should be the client id value and the verification key should be found from the `jwks_uri` or `jwks_uri` field of that client (however that client info comes to exist with the AS). When the Client Attestation JWT is issued by some attestation service, the `iss` value should identify that service. And the AS needs to trust the service for this purpose and know how to find verification keys for it. \n> \n> The `sub` of the Client Attestation JWT should be the client id value. \n\nThis is exactly my opinion.",
+          "createdAt": "2023-11-09T22:17:13Z",
+          "updatedAt": "2023-11-09T22:17:13Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "FWIW, I'm not totally convinced there's really a need to allow for an attestation service that's not managed by the same entity as the client but other folks seem to want it so my prior comment assumes it. ",
+          "createdAt": "2023-11-09T22:30:44Z",
+          "updatedAt": "2023-11-09T22:32:18Z"
         }
       ]
     },
@@ -1303,7 +1331,7 @@
       "labels": [],
       "body": "The specification contains sentences related to sender-constrained acess tokens as follows.\r\n\r\n#### In the \"1. Introduction\" section:\r\n>... The Authorization Server may continue to issue sender-constrained access tokens using DPOP.\r\n\r\n#### In the \"4.1.1. Client Attestation JWT\" section:\r\n> The JWT MUST contain an \"cnf\" claim conforming RFC7800 that conveys the key to be used for sender constraining tokens issued by the authorization server. The key MUST be expressed using the \"jwk\" representation.\r\n\r\n### Questions\r\n\r\n**Q1.** \"**Client authentication**\" and \"**sender-constrained access token**\" are different. Is the specification trying to define requirements not only for client authentication but also for sender-constrained access tokens? (FYI: [RFC 8705](https://www.rfc-editor.org/rfc/rfc8705.html) defines \"client authentication\" in [Section 2](https://www.rfc-editor.org/rfc/rfc8705.html#section-2) and defines \"sender-constrained access token\" in [Section 3](https://www.rfc-editor.org/rfc/rfc8705.html#section-3).)\r\n\r\n**Q2.** DPOP is mentioned abruptly in the Introduction section but not referenced anywhere else. Is this mention of DPOP merely an example of sender-constrained access tokens, or is it a requirement to bind the Client Instance Key to the access token as if it were specified by DPOP? If it is not a normative requirement, mentioning DPOP would only cause confusion without any benefits. On the contrary, if it is a normative requirement, detailed explanation is needed.\r\n\r\n**Q3.** The explanation about the `cnf` claim of the Client Attestation JWT requires authorization server implementations to bind the Client Instance Key to access tokens. Is this normative requirement really intended? If it is intended, how does the client prove that it possesses the private key of the Client Instance Key when accessing protected resource endpoints? DPOP?",
       "createdAt": "2023-07-23T09:11:07Z",
-      "updatedAt": "2023-11-01T15:51:22Z",
+      "updatedAt": "2023-11-09T20:56:37Z",
       "closedAt": null,
       "comments": [
         {
@@ -1326,6 +1354,13 @@
           "body": "The explicit reference to DPoP was removed from the introduction for now.\r\n\r\nI would consider adding it to implementation considerations as a recommendation to use DPoP-bound access tokens after client authentication with this spec to achieve a consistent security level",
           "createdAt": "2023-11-01T15:51:22Z",
           "updatedAt": "2023-11-01T15:51:22Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I believe this issue has now been addressed, intend to close soon if there are no objections.",
+          "createdAt": "2023-11-09T20:56:36Z",
+          "updatedAt": "2023-11-09T20:56:36Z"
         }
       ]
     },
@@ -1675,7 +1710,7 @@
       "labels": [],
       "body": "Currently section 5.2 states:\r\n> The client MUST also use the same key that was present in the \"cnf\" claim of the client attestation that was used for client authentication when the refresh token was issued.\r\n\r\nIn the case that the original client attestation JWT has expired, what should happen? If it is acceptable for the client to re-use the same key in the \"cnf\" field across attestation JWTs, then the client can easily generate a new attestation JWT with the same \"cnf\" key. But if the client needs to use a fresh \"cnf\" key, then I can think of three options:\r\n\r\n1. Define a flow which endorses the new \"cnf\" key with the old \"cnf\" key.\r\n2. Define a field in the client attestation JWT that contains a unique identifier for the client instance, and use that identifier to bind the refresh token to the client instance.\r\n3. Explicitly don't permit this in the specification, add text to the specification that makes it clear that the \"cnf\" key must stay the same across refreshed client attestations.\r\n\r\nMy preference would be for option 2.",
       "createdAt": "2023-10-24T09:57:44Z",
-      "updatedAt": "2023-11-06T14:53:14Z",
+      "updatedAt": "2023-11-10T17:15:19Z",
       "closedAt": null,
       "comments": [
         {
@@ -1726,6 +1761,27 @@
           "body": "> A: the wallet initially gets one client attestation and uses the cnf key over a longer period to bind a sequence of refresh tokens to it. -> similar to option 4?\r\n\r\nI think this is basically my option 3.\r\n\r\n> Well the current language doesn't actually guarantee that the AS can track the client instance (which is a good thing IMO), as the instance can in many common cases, rotate the keys it uses in between fetching tokens.\r\n\r\n> a single client instance could actually use multiple keys over time meaning the AS can't track the client instance across all of those interactions\r\n\r\nUnless there is a mechanism to issue a refresh token that I am not aware of, it is not possible to rotate keys according to the current language. The spec states:\r\n\r\n> Authorization servers issuing a refresh token in response to a token request using the \"urn:ietf:params:oauth:client-assertion-type:jwt-client-attestation\" client authentication method **MUST bind the refresh token to the client instance**, and NOT just the client as specified in section 6 {{RFC6749}}. To prove this binding, **the client instance MUST authenticate itself to the authorization server when refreshing an access token** using the \"urn:ietf:params:oauth:client-assertion-type:jwt-client-attestation\" authentication method. The client **MUST also use the same key** that was present in the \"cnf\" claim of the client attestation that was used for client authentication when the refresh token was issued.\r\n\r\nThis is what I mean by \"_This just makes explicit the tracking of client instances that already existed through the requirement for the \"cnf\" key to stay the same over attestations._\"",
           "createdAt": "2023-11-06T14:52:08Z",
           "updatedAt": "2023-11-06T14:53:14Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I don't think rotation of the key within the lifetime of a refresh token is something that needs to be accounted for. So my preference would be for option 3 (which is how it functionally is now but could be made more explicit in the text).  Adding an explicit claim in the client attestation JWT which identifies the client instance, i.e. option 2, would be okay too. But I think it'd get complicated/confusing to describe it in the spec. \r\n",
+          "createdAt": "2023-11-09T21:34:11Z",
+          "updatedAt": "2023-11-09T21:34:11Z"
+        },
+        {
+          "author": "cobward",
+          "authorAssociation": "NONE",
+          "body": "> I don't think rotation of the key within the lifetime of a refresh token is something that needs to be accounted for.\r\n\r\nBy saying you can't rotate the key within the lifetime of a refresh token, I think this means that you cannot rotate the key without starting from scratch at the authorization endpoint. I just wanted to make sure that is what you meant?",
+          "createdAt": "2023-11-10T16:24:23Z",
+          "updatedAt": "2023-11-10T16:24:23Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> > I don't think rotation of the key within the lifetime of a refresh token is something that needs to be accounted for.\r\n> \r\n> By saying you can't rotate the key within the lifetime of a refresh token, I think this means that you cannot rotate the key without starting from scratch at the authorization endpoint. I just wanted to make sure that is what you meant?\r\n\r\nBasically yeah, I think so. Rotating the the key would mean you'd have to go back to the authorization endpoint. That seems acceptable/reasonable. Maybe it's too narrow of a view but it seems like if there's a reason to rotate that key then reauthorizing is probably needed or at least acceptable anyway. ",
+          "createdAt": "2023-11-10T17:15:19Z",
+          "updatedAt": "2023-11-10T17:15:19Z"
         }
       ]
     },
@@ -1766,6 +1822,54 @@
       "body": "Following up on the conversations some of us had after IIW (see https://github.com/openid/OpenID4VCI/issues/71#issuecomment-1719631991), this issue proposes the addition of a server provided nonce mechanism to limit the lifetime of a Client Attestation PoP JWT, similar to the [DPoP nonce mechanism](https://www.rfc-editor.org/rfc/rfc9449.html#name-authorization-server-provid).\r\n\r\nThis relates to https://github.com/openid/OpenID4VCI/issues/71, however the required changes need to be addressed on the attestation spec and not on the VCI spec.\r\n\r\nI'm currently working on a PR to add this. ",
       "createdAt": "2023-11-08T12:14:18Z",
       "updatedAt": "2023-11-08T12:14:18Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 60,
+      "id": "I_kwDOJaEkaM52eD7T",
+      "title": "IETF 118: Refer / Explain relation to RATS and the RATS terminology",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/60",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-11-10T13:05:09Z",
+      "updatedAt": "2023-11-10T13:09:57Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 61,
+      "id": "I_kwDOJaEkaM52eFe7",
+      "title": "IETF 118 : Should this mechanism be used in parallel with Client Authentication /with Dynamic Client Registration",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/61",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "In particiuar:\r\n- this mechanism should work for other endpoints\r\n- client attestation should not \"take up\" the client authentication slot, but be separate\r\n- How does the AS get the key of the client backend/attestation service? What's the trust mechanism?\r\n\r\nRelated to #62 ",
+      "createdAt": "2023-11-10T13:09:37Z",
+      "updatedAt": "2023-11-10T17:27:59Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 62,
+      "id": "I_kwDOJaEkaM52f0LU",
+      "title": "IETF 118: Overlap/Synergies with \"Attestation in Dynamic Client Registration Draft\"",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/62",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "What are similarities with the new draft of \"Attestation in Dynamic Client Registration Draft\"?\r\nEvaluate the possiblities to merge this.",
+      "createdAt": "2023-11-10T17:27:28Z",
+      "updatedAt": "2023-11-10T17:27:28Z",
       "closedAt": null,
       "comments": []
     }
