@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-12T00:48:01.489843+00:00",
+  "timestamp": "2023-11-14T00:43:55.497242+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -619,7 +619,7 @@
       "labels": [],
       "body": "In the example in section 3.1.1. the issuer and the sub parameters should not be the same since the Wallet provider and the wallet instance are distinct entities. The private key in sole control of the wallet instance is referenced in the attestation while the subject refers to the Wallet Provider. \r\n\r\nMoreover, is the given example meant to be normative? I'm asking since in the example we find the JWS header parameter kid without any explanatory text about the key resolution mechanism allowed in the specs. (x5c, trust_chain, jwk)\r\n\r\n",
       "createdAt": "2023-05-30T13:22:00Z",
-      "updatedAt": "2023-11-09T20:33:52Z",
+      "updatedAt": "2023-11-12T14:11:44Z",
       "closedAt": null,
       "comments": [
         {
@@ -754,6 +754,13 @@
           "body": "Thanks @TakahikoKawasaki for your write up. @peppelinux if the main intent of your use-case is to support identifying the client instance, then I believe as you highlight above that can be accomplished via the `cnf` claim. Therefore we can leave the `sub` claim as the client_id value. Will that work for your deployment?\r\n\r\n",
           "createdAt": "2023-11-09T20:33:52Z",
           "updatedAt": "2023-11-09T20:33:52Z"
+        },
+        {
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "body": "@tplooker \r\n\r\n> If we make the change proposed in #32 then the issuer of the client attestation is no longer necessarily the client (or client backend) instead it could be any party that the authorization server trusts to make attestations about clients. However in that model the subject of the attestation is still always a client instance not a user.\r\n\r\nI didn't mention any user, a subject could be any kind of entity, like a robot, a machine, a client, etc.\r\n\r\n> Therefore we can leave the sub claim as the client_id value. Will that work for your deployment?\r\n\r\nIn my deployment the `sub` value, then the client_id, is the thumbprint value of the cnf.jwk and this is therefore different from the `iss` value.\r\n\r\nThanks to @TakahikoKawasaki for his memorable contributions.\r\n",
+          "createdAt": "2023-11-12T14:11:44Z",
+          "updatedAt": "2023-11-12T14:11:44Z"
         }
       ]
     },
@@ -1710,7 +1717,7 @@
       "labels": [],
       "body": "Currently section 5.2 states:\r\n> The client MUST also use the same key that was present in the \"cnf\" claim of the client attestation that was used for client authentication when the refresh token was issued.\r\n\r\nIn the case that the original client attestation JWT has expired, what should happen? If it is acceptable for the client to re-use the same key in the \"cnf\" field across attestation JWTs, then the client can easily generate a new attestation JWT with the same \"cnf\" key. But if the client needs to use a fresh \"cnf\" key, then I can think of three options:\r\n\r\n1. Define a flow which endorses the new \"cnf\" key with the old \"cnf\" key.\r\n2. Define a field in the client attestation JWT that contains a unique identifier for the client instance, and use that identifier to bind the refresh token to the client instance.\r\n3. Explicitly don't permit this in the specification, add text to the specification that makes it clear that the \"cnf\" key must stay the same across refreshed client attestations.\r\n\r\nMy preference would be for option 2.",
       "createdAt": "2023-10-24T09:57:44Z",
-      "updatedAt": "2023-11-10T17:15:19Z",
+      "updatedAt": "2023-11-13T10:45:01Z",
       "closedAt": null,
       "comments": [
         {
@@ -1782,6 +1789,13 @@
           "body": "> > I don't think rotation of the key within the lifetime of a refresh token is something that needs to be accounted for.\r\n> \r\n> By saying you can't rotate the key within the lifetime of a refresh token, I think this means that you cannot rotate the key without starting from scratch at the authorization endpoint. I just wanted to make sure that is what you meant?\r\n\r\nBasically yeah, I think so. Rotating the the key would mean you'd have to go back to the authorization endpoint. That seems acceptable/reasonable. Maybe it's too narrow of a view but it seems like if there's a reason to rotate that key then reauthorizing is probably needed or at least acceptable anyway. ",
           "createdAt": "2023-11-10T17:15:19Z",
           "updatedAt": "2023-11-10T17:15:19Z"
+        },
+        {
+          "author": "cobward",
+          "authorAssociation": "NONE",
+          "body": "> if there's a reason to rotate that key then reauthorizing is probably needed\r\n\r\nI'm not sure that's true. IMO authorization is more of a user-identification concern, the rotation of the key is a client-security concern.\r\n\r\nSaying that, I think I agree that it's probably acceptable to say key-rotation isn't possible without returning to the authorization endpoint.\r\n\r\nGiven this I would suggest we add a sub-section to the Implementation Considerations section, something along the lines of this:\r\n\r\n> ## Rotation of confirmation key\r\n> This specification does not provide a mechanism to rotate the confirmation key identified in the Client Attestation JWT. If the client instance needs to use a new confirmation key for any reason, then it MUST begin the OAuth 2.0 flow from scratch.",
+          "createdAt": "2023-11-13T10:45:01Z",
+          "updatedAt": "2023-11-13T10:45:01Z"
         }
       ]
     },
@@ -1853,9 +1867,17 @@
       "labels": [],
       "body": "In particiuar:\r\n- this mechanism should work for other endpoints\r\n- client attestation should not \"take up\" the client authentication slot, but be separate\r\n- How does the AS get the key of the client backend/attestation service? What's the trust mechanism?\r\n\r\nRelated to #62 ",
       "createdAt": "2023-11-10T13:09:37Z",
-      "updatedAt": "2023-11-10T17:27:59Z",
+      "updatedAt": "2023-11-13T11:04:56Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "tlodderstedt",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "The way this mechanism is designed allows it to be used with other endpoints then the token endpoint (like any other client authentication method). \r\n\r\nUsing client authentication as a way to also do client attestation is not just convenient it also means any client with attestation capabilities can be treated as a confidential client. \r\n\r\nI would like to understand how people proposing to split client authentication and attestation envision this to work. Would that mean deployments would use public clients + attestations? What would be the benefit?\r\n\r\nHow would dynamic client registration work with attestation? \r\n\r\nI personally have doubts about the utility of dynamic client registration. It requires the client to dynamically keep track of AS specific credentials including its expiration. Attestation based authentication on the other hand allows a client to just use a single attestation with any compatible AS. ",
+          "createdAt": "2023-11-13T11:04:56Z",
+          "updatedAt": "2023-11-13T11:04:56Z"
+        }
+      ]
     },
     {
       "number": 62,
@@ -4547,6 +4569,53 @@
           "createdAt": "2023-10-23T20:04:58Z",
           "updatedAt": "2023-10-23T20:04:58Z",
           "comments": []
+        }
+      ]
+    },
+    {
+      "number": 63,
+      "id": "PR_kwDOJaEkaM5fST1s",
+      "title": "Add text on cnf key rotation",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/63",
+      "state": "OPEN",
+      "author": "cobward",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #57 \r\n\r\n## \ud83d\udcd1 Description\r\nThis PR makes explicit an already implicit feature of the specification - that it is not possible to rotate the confirmation key.\r\n<!--\r\n## Preview Link\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)\r\n-->",
+      "createdAt": "2023-11-13T10:52:13Z",
+      "updatedAt": "2023-11-13T16:21:25Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
+      "headRepository": "cobward/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "patch-1",
+      "headRefOid": "a6df619bcbc329efa7b862bf3dd16458e0fad7f2",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5m-nAU",
+          "commit": {
+            "abbreviatedOid": "a6df619"
+          },
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2023-11-13T16:20:27Z",
+          "updatedAt": "2023-11-13T16:21:25Z",
+          "comments": [
+            {
+              "originalPosition": 7,
+              "body": "```suggestion\r\n## Rotation of Client Instance Key\r\n\r\nThis specification does not provide a mechanism to rotate the Client Instance Key in the Client Attestation JWT's \"cnf\" claim. If the Client Instance needs to use a new Client Instance Key for any reason, then it MUST request a new Client Attestation JWT from its Client Backend.\r\n\r\n```",
+              "createdAt": "2023-11-13T16:20:28Z",
+              "updatedAt": "2023-11-13T16:21:25Z"
+            }
+          ]
         }
       ]
     }
