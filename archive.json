@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-16T00:46:31.637149+00:00",
+  "timestamp": "2023-11-19T00:50:18.918789+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -1867,7 +1867,7 @@
       "labels": [],
       "body": "In particiuar:\r\n- this mechanism should work for other endpoints\r\n- client attestation should not \"take up\" the client authentication slot, but be separate\r\n- How does the AS get the key of the client backend/attestation service? What's the trust mechanism?\r\n\r\nRelated to #62 ",
       "createdAt": "2023-11-10T13:09:37Z",
-      "updatedAt": "2023-11-15T15:13:42Z",
+      "updatedAt": "2023-11-17T09:53:15Z",
       "closedAt": null,
       "comments": [
         {
@@ -1932,6 +1932,41 @@
           "body": "> Is this handling any different from private_key_jwt?\r\n\r\nYes. The entire concept that one client_id can now have multiple instances and that the AS needs to treat the different instances of that client_id as distinct entities is a brand new concept created in this draft.",
           "createdAt": "2023-11-15T15:13:41Z",
           "updatedAt": "2023-11-15T15:13:41Z"
+        },
+        {
+          "author": "tlodderstedt",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "You are right. Since different client instances may use different attestations, the refresh token is no longer just bound to the client id. \r\n\r\nI think a client id previously already could have multiple instances (think of open banking apps), however the AS did not need to know. Why? Because authentication was done through the respective backend so instance management was application internal. Now, the instances themselves can authenticate, which raises privacy as the backend cannot observer this interaction. The way I see it this draft allows implementation of confidential clients with native apps in a more privacy friendly manner. The attestation part helps the AS to determine whether the instance is really an instance of the respective client id. I guess that's why I believe both concepts belong together. ",
+          "createdAt": "2023-11-16T11:19:05Z",
+          "updatedAt": "2023-11-16T11:19:05Z"
+        },
+        {
+          "author": "jogu",
+          "authorAssociation": "NONE",
+          "body": "> I think a client id previously already could have multiple instances (think of open banking apps), however the AS did not need to know\r\n\r\nI'm not sure that's really counts multiple instances. Or at least it's not just that authentication was in the backend, it's also that the refresh tokens never left the backend so there was no risk of one instance using a difference instances refresh token.\r\n\r\nI agree with the privacy benefits, but it is a significant change to the security posture. It is clear that the new thing defined in this draft is neither a traditional confidential client nor a traditional public client. I'm struggling to figure out which it is closest too. I think in a lot of ways it feels closest to a public client that's using dpop (particularly when you think of how refresh tokens are bound to the dpop key in that case), but essentially with the addition of attestation for the dpop key.\r\n",
+          "createdAt": "2023-11-16T11:54:24Z",
+          "updatedAt": "2023-11-16T11:54:24Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> feels closest to a public client that's using dpop (particularly when you think of how refresh tokens are bound to the dpop key in that case), but essentially with the addition of attestation for the dpop key.\r\n\r\nI'd concur with that. And there's some discussion over [here and above](https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/64#issuecomment-1815362871) about maybe using the DPoP proof as the PoP mechanism rather than the Client Attestation PoP JWT. Doing that change in conjunction with changing the Client Attestation JWT to be sent via some other parameter (`client_key_attestation` or something) and decoupled from client authentication is appealing. It'd keep public clients public. But give binding of RT to the DPoP key (the key that's been attested to) without the [special handling that's there now](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-attestation-based-client-auth#name-refresh-token-binding) but is a really important security property. And could provide this simple attestation (mostly about a key) independent of client authentication. And also stay orthogonal to DCR. \r\n",
+          "createdAt": "2023-11-16T22:16:42Z",
+          "updatedAt": "2023-11-16T22:16:42Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> Yes. The entire concept that one client_id can now have multiple instances and that the AS needs to treat the different instances of that client_id as distinct entities is a brand new concept created in this draft.\r\n\r\nIt might not be a broadly enough socialised concept yet but I dont think this draft has invented the notion of a client instance. [OAuth 2.1](https://www.ietf.org/archive/id/draft-ietf-oauth-v2-1-09.html), [RFC8705](https://www.rfc-editor.org/rfc/rfc8705.html) and [the latest OAuth browser BCP](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-05) all speak informally about client instances.\r\n\r\nI also dont think the draft is aiming for an AS to treat different instances of a particular client differently beyond that if they fail to authenticate in a way that is required for that client, then of course their request could be rejected. The exception is perhaps the RT language that @bc-pi raised which I agree is very important to prevent one client instance from being able to use another client instances RT.\r\n\r\n> Doing that change in conjunction with changing the Client Attestation JWT to be sent via some other parameter (client_key_attestation or something) and decoupled from client authentication is appealing. It'd keep public clients public. But give binding of RT to the DPoP key (the key that's been attested to) without the [special handling that's there now](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-attestation-based-client-auth#name-refresh-token-binding) but is a really important security property.\r\n\r\nI like this solution personally, it is much cleaner to explain and feels like it gets the best of both worlds including re-using DPoP more meaning this specification has to invent less.",
+          "createdAt": "2023-11-17T03:03:54Z",
+          "updatedAt": "2023-11-17T03:06:10Z"
+        },
+        {
+          "author": "jogu",
+          "authorAssociation": "NONE",
+          "body": "> It might not be a broadly enough socialised concept yet but I dont think this draft has invented the notion of a client instance. [OAuth 2.1](https://www.ietf.org/archive/id/draft-ietf-oauth-v2-1-09.html), [RFC8705](https://www.rfc-editor.org/rfc/rfc8705.html) and [the latest OAuth browser BCP](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-05) all speak informally about client instances.\r\n\r\nThis is true, albeit they only speak about instances of public clients. (My original sentence wasn't great; it was the \"that the AS needs to treat the different instances of that same confidential client_id as distinct entities is a brand new concept\" part that I really wanted to emphasise. And we agree that it's this refresh token related behaviour that's the important and necessary difference.)\r\n\r\nI strongly agree this latest direction as per your / Brian's comments.",
+          "createdAt": "2023-11-17T09:53:14Z",
+          "updatedAt": "2023-11-17T09:53:14Z"
         }
       ]
     },
@@ -1947,9 +1982,24 @@
       "labels": [],
       "body": "What are similarities with the new draft of \"Attestation in Dynamic Client Registration Draft\"?\r\nEvaluate the possiblities to merge this.",
       "createdAt": "2023-11-10T17:27:28Z",
-      "updatedAt": "2023-11-10T17:27:28Z",
+      "updatedAt": "2023-11-17T02:39:34Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "My intuition is that there are actually very few synergies when you get into the specifics and details (which are what is needed for interop) and merging the drafts will be counter productive at best. ",
+          "createdAt": "2023-11-16T22:01:02Z",
+          "updatedAt": "2023-11-16T22:01:02Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I share this view ^ efforts to use attestations in DCR are quite different to proposing a client authentication mechanism that uses attestations and I'd prefer we keep them distinct.",
+          "createdAt": "2023-11-17T02:39:33Z",
+          "updatedAt": "2023-11-17T02:39:33Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -4324,13 +4374,13 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #15 \r\nCloses #29 \r\n\r\n## \ud83d\udcd1 Description\r\nAdd text on aal claim\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
       "createdAt": "2023-10-09T14:31:36Z",
-      "updatedAt": "2023-11-02T11:53:56Z",
+      "updatedAt": "2023-11-16T10:44:24Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
       "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "headRefName": "aal",
-      "headRefOid": "b58032e7dbb889bb27c17365f7c36987db43a4ba",
+      "headRefOid": "3f8791c029fa3239d798bf7c721d6a061bae88cc",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -4362,6 +4412,26 @@
               "body": "```suggestion\r\n8. The JWT MAY contain a \"aal\" (authenticator assurance level) claim that describes the attested assurance level of the Client Instance and the Client Instance Key. The claim value contains a URI that references a jurisdictional framework. Consumers of the client attestation are RECOMMENDED to evaluate this claim, if they intend to state an assurance level for their issued tokens themselves.\r\n```",
               "createdAt": "2023-10-23T06:56:09Z",
               "updatedAt": "2023-10-23T06:56:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5nVqQ1",
+          "commit": {
+            "abbreviatedOid": "b58032e"
+          },
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-16T08:03:30Z",
+          "updatedAt": "2023-11-16T08:03:55Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "```suggestion\r\n8. The JWT MAY contain a \"aal\" (authenticator assurance level) claim that describes the attested assurance level of the Client Instance and the Client Instance Key. The claim value contains a URI that references a jurisdictional framework. Consumers of the Client attestation are RECOMMENDED to evaluate this claim, if they intend to state an assurance level for their issued tokens themselves.\r\n```",
+              "createdAt": "2023-11-16T08:03:31Z",
+              "updatedAt": "2023-11-16T08:03:55Z"
             }
           ]
         }
@@ -4640,7 +4710,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #57 \r\n\r\n## \ud83d\udcd1 Description\r\nThis PR makes explicit an already implicit feature of the specification - that it is not possible to rotate the confirmation key.\r\n<!--\r\n## Preview Link\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)\r\n-->",
       "createdAt": "2023-11-13T10:52:13Z",
-      "updatedAt": "2023-11-14T14:48:08Z",
+      "updatedAt": "2023-11-16T10:55:21Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
@@ -4685,6 +4755,32 @@
           "createdAt": "2023-11-14T14:48:08Z",
           "updatedAt": "2023-11-14T14:48:08Z",
           "comments": []
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5nVqln",
+          "commit": {
+            "abbreviatedOid": "4e783cc"
+          },
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-16T08:04:25Z",
+          "updatedAt": "2023-11-16T08:04:25Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5nXBlr",
+          "commit": {
+            "abbreviatedOid": "4e783cc"
+          },
+          "author": "tlodderstedt",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-16T10:55:21Z",
+          "updatedAt": "2023-11-16T10:55:21Z",
+          "comments": []
         }
       ]
     },
@@ -4700,7 +4796,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #59\r\n\r\n## \ud83d\udcd1 Description\r\nThis PR adds server-provided nonces as a way to check the freshness of Client Attestation PoP JWT, in a similar way to what is done in DPoP (RFC 9449).\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\nNA",
       "createdAt": "2023-11-14T14:08:40Z",
-      "updatedAt": "2023-11-15T15:53:01Z",
+      "updatedAt": "2023-11-17T18:39:15Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
@@ -4718,6 +4814,62 @@
           "body": "This is the obvious solution going in the right direction. I'm not convinced yet that this is the ideal solution, especially in combination with DPoP.",
           "createdAt": "2023-11-15T15:53:01Z",
           "updatedAt": "2023-11-15T15:53:01Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> @paulbastian:\r\n> This is the obvious solution going in the right direction. I'm not convinced yet that this is the ideal solution, especially in combination with DPoP. \r\n \r\nAgree with the direction and also unsureness around DPoP. There's a lot of overlap and duplicative text and functionality with DPoP in this nonce mechanism and the Client Attestation PoP JWT itself. A lot. It makes me question (again) if it wouldn't be better to use the DPoP Proof JWT as the PoP mechanism in this work rather than recreate so much of it with the Client Attestation PoP JWT. \r\n",
+          "createdAt": "2023-11-16T18:17:25Z",
+          "updatedAt": "2023-11-16T18:17:25Z"
+        },
+        {
+          "author": "tlodderstedt",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@bc-pi \r\n\"It makes me question (again) if it wouldn't be better to use the DPoP Proof JWT as the PoP mechanism in this work rather than recreate so much of it with the Client Attestation PoP JWT.\"\r\n\r\nThat ties two mechanisms together that were built for different purposes. I think that would make sense if client attestation would always be used with DPoP bound access tokens. That means: a) no client attestation without sender constrained access tokens and b) no mTLS for sender constrained access tokens when using client attestation. ",
+          "createdAt": "2023-11-16T18:26:57Z",
+          "updatedAt": "2023-11-16T18:26:57Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> That ties two mechanisms together that were built for different purposes. \r\n\r\nThe [DPoP proof JWT ](https://www.rfc-editor.org/rfc/rfc9449.html#name-dpop-proof-jwts) part of RFC9449 was built exactly for the purpose of proving possession of a key in the context of an HTTP request. And can be used without necessarily binding access tokens. ",
+          "createdAt": "2023-11-16T18:40:55Z",
+          "updatedAt": "2023-11-16T18:40:55Z"
+        },
+        {
+          "author": "pmhsfelix",
+          "authorAssociation": "NONE",
+          "body": ">@bc-pi\r\n>There's a lot of overlap and duplicative text and functionality with DPoP in this nonce mechanism and the Client Attestation PoP JWT itself. A lot. It makes me question (again) if it wouldn't be better to use the DPoP Proof JWT as the PoP mechanism in this work rather than recreate so much of it with the Client Attestation PoP JWT.\r\n\r\nAlso had the exact same feeling while writing the PR, namely the creation of a duplicate header and a duplicate OAuth error code. Using DPoP for the proof-of-possession did also cross my mind.\r\n\r\nWe could perhaps decouple the DPoP proof of possession JWT from the `DPoP` HTTP header. \r\nMy current understanding is that the `DPoP` header serves *two* purposes when used on a Token Request:\r\n- Convey a public key proof-of-possesion JWT.\r\n- Request the issued tokens to be bound to that public key.\r\nOTOH, when used on a Resource Server request, the `DPoP` header seems to only serve the first purpose.\r\n\r\nIf we want to use DPoP all the way, then this seems to work perfectly. \r\nHowever, if we don't want to bind the access tokens using DPoP, we could still use the DPoP proof of possession JWT but convey it in a different way (e.g. on the token request body or on a different header, instead of on the `DPoP` header). The `DPoP-nonce` and `use_dpop_nonce` could still be used to provide a fresher nonce.\r\n\r\n",
+          "createdAt": "2023-11-16T19:04:01Z",
+          "updatedAt": "2023-11-16T19:04:01Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "> [...] if we don't want to bind the access tokens using DPoP, [...] \r\n\r\nDPoP itself specifically has text in the [DPoP Access Token Request](https://www.rfc-editor.org/rfc/rfc9449.html#name-dpop-access-token-request) section that [allows for an AS to issue access tokens that are not DPoP bound](https://www.rfc-editor.org/rfc/rfc9449.html#section-5-9). It says:\r\n\r\n> An authorization server MAY elect to issue access tokens that are not DPoP bound, which is signaled to the client with a value of Bearer in the token_type parameter of the access token response per [RFC6750].\r\n\r\nAnd this draft could certainly reiterate that, if it went with the DPoP proof as its PoP mechanism.\r\n\r\nThere is and has been (it's come up previously) a lot of resistance to that approach though. But maybe that resistance was from the misconception that DPoP usage at the token endpoint meant that access tokens had to be DPoP bound. ",
+          "createdAt": "2023-11-16T21:44:44Z",
+          "updatedAt": "2023-11-16T21:45:34Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> > [...] if we don't want to bind the access tokens using DPoP, [...]\r\n> \r\n> DPoP itself specifically has text in the [DPoP Access Token Request](https://www.rfc-editor.org/rfc/rfc9449.html#name-dpop-access-token-request) section that [allows for an AS to issue access tokens that are not DPoP bound](https://www.rfc-editor.org/rfc/rfc9449.html#section-5-9). It says:\r\n> \r\n> > An authorization server MAY elect to issue access tokens that are not DPoP bound, which is signaled to the client with a value of Bearer in the token_type parameter of the access token response per [RFC6750].\r\n> \r\n> And this draft could certainly reiterate that, if it went with the DPoP proof as its PoP mechanism.\r\n> \r\n> There is and has been (it's come up previously) a lot of resistance to that approach though. But maybe that resistance was from the misconception that DPoP usage at the token endpoint meant that access tokens had to be DPoP bound.\r\n\r\nAt least I'd failed to realise this language existed in DPoP and it feels like because of that I dont really see why we shouldn't consider using the DPoP format for the PoP, it feels both generalised enough for other endpoints AND doesn't mandate the tokens issued from the token endpoint are DPoP bound.",
+          "createdAt": "2023-11-17T02:51:48Z",
+          "updatedAt": "2023-11-17T02:51:48Z"
+        },
+        {
+          "author": "pmhsfelix",
+          "authorAssociation": "NONE",
+          "body": "So we would use the DPoP token format *and* convey it via the `DPoP` header? Or just use the DPoP token format (and associated nonce management)?",
+          "createdAt": "2023-11-17T16:46:00Z",
+          "updatedAt": "2023-11-17T16:46:00Z"
+        },
+        {
+          "author": "paulbastian",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I'm somehow hesitant to put everything in the headers.\n\nI think we should evaluate to reuse the key from the client attestation as a key for dpop binding and somehow reuse the nonce providing mechanism. As this is a major use case in mind, we should avoid sending multiple nonces, using multiple keys and proofs.",
+          "createdAt": "2023-11-17T18:39:14Z",
+          "updatedAt": "2023-11-17T18:39:14Z"
         }
       ],
       "reviews": [
@@ -4819,6 +4971,38 @@
               "body": "I believe this sentence is missing a formative language. We may even add it above where the`nonce` claim is originally defined.\r\n",
               "createdAt": "2023-11-15T08:55:50Z",
               "updatedAt": "2023-11-15T10:10:23Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOJaEkaM5nVo7P",
+          "commit": {
+            "abbreviatedOid": "fa66a20"
+          },
+          "author": "peppelinux",
+          "authorAssociation": "MEMBER",
+          "state": "CHANGES_REQUESTED",
+          "body": "just editorial, consider it approved",
+          "createdAt": "2023-11-16T07:59:42Z",
+          "updatedAt": "2023-11-16T08:02:42Z",
+          "comments": [
+            {
+              "originalPosition": 23,
+              "body": "```suggestion\r\nThis section outlines a method that utilizes server-generated opaque nonces to restrict the lifespan of a Client Attestation Proof of Possession (PoP) JWT., similar to the one defined in section 8 of {{RFC9449}}.\r\n```",
+              "createdAt": "2023-11-16T07:59:43Z",
+              "updatedAt": "2023-11-16T08:02:42Z"
+            },
+            {
+              "originalPosition": 25,
+              "body": "```suggestion\r\nWithout this mechanism, a malicious entity, which could include the end-user, controlling the client can generate Client Attestation Proof of Possession (PoP) JWTs for unrestricted future use. Moreover, a discrepancy between the time reference of a benign client (like a mobile device) and the authorization server's time reference could lead to Client Attestation PoP JWTs that the authorization server never accepts.\r\n```",
+              "createdAt": "2023-11-16T08:01:05Z",
+              "updatedAt": "2023-11-16T08:02:42Z"
+            },
+            {
+              "originalPosition": 30,
+              "body": "```suggestion\r\nThis requirement is communicated to the Client by having the authorization server return an HTTP response with the `400` status and an `error` field with the value `\"use_attestation_nonce\"`, when the Client Attestation PoP JWT present in the HTTP request does not contain a valid nonce.\r\n```",
+              "createdAt": "2023-11-16T08:01:34Z",
+              "updatedAt": "2023-11-16T08:02:42Z"
             }
           ]
         }
