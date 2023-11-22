@@ -5,8 +5,7 @@
 Network Working Group                                          T. Looker
 Internet-Draft                                                     MATTR
 Intended status: Informational                                P. Bastian
-Expires: 25 April 2024                              Bundesdruckerei GmbH
-                                                         23 October 2023
+Expires: 25 May 2024                                    22 November 2023
 
 
            OAuth 2.0 Attestation-Based Client Authentication
@@ -47,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 April 2024.
+   This Internet-Draft will expire on 25 May 2024.
 
 Copyright Notice
 
@@ -628,5 +627,4 @@ Authors' Addresses
 
 
    Paul Bastian
-   Bundesdruckerei GmbH
    Email: paul.bastian@bdr.de
