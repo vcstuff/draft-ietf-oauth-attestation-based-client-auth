@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-21T00:47:17.043593+00:00",
+  "timestamp": "2023-11-23T00:45:31.311440+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -1867,7 +1867,7 @@
       "labels": [],
       "body": "In particiuar:\r\n- this mechanism should work for other endpoints\r\n- client attestation should not \"take up\" the client authentication slot, but be separate\r\n- How does the AS get the key of the client backend/attestation service? What's the trust mechanism?\r\n\r\nRelated to #62 ",
       "createdAt": "2023-11-10T13:09:37Z",
-      "updatedAt": "2023-11-17T09:53:15Z",
+      "updatedAt": "2023-11-22T11:20:09Z",
       "closedAt": null,
       "comments": [
         {
@@ -1967,6 +1967,13 @@
           "body": "> It might not be a broadly enough socialised concept yet but I dont think this draft has invented the notion of a client instance. [OAuth 2.1](https://www.ietf.org/archive/id/draft-ietf-oauth-v2-1-09.html), [RFC8705](https://www.rfc-editor.org/rfc/rfc8705.html) and [the latest OAuth browser BCP](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps-05) all speak informally about client instances.\r\n\r\nThis is true, albeit they only speak about instances of public clients. (My original sentence wasn't great; it was the \"that the AS needs to treat the different instances of that same confidential client_id as distinct entities is a brand new concept\" part that I really wanted to emphasise. And we agree that it's this refresh token related behaviour that's the important and necessary difference.)\r\n\r\nI strongly agree this latest direction as per your / Brian's comments.",
           "createdAt": "2023-11-17T09:53:14Z",
           "updatedAt": "2023-11-17T09:53:14Z"
+        },
+        {
+          "author": "tlodderstedt",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "client instances: the draft allows to authenticate the caller as being an instance of a certain client (id). The client id should then be used by the AS for other logic (such as storing user consent and so on). There is no need to identify the client instance, I would go as far as to state the instance should not be identifiable simply because a client instance identifier would be kind of a user identifier (in case of a native app). I know the key is a co-relation handle, that's why deployments should use short lived or even emphemeral client attestation to foster privacy.\r\n\r\nattestation vs authentication: In traditional OAuth deployments requiring client authentication (e.g. open banking or commercial/paid schemes), a native app would send requests through its backend, which acts as a confidential client towards the AS. That's the way to ensure the AS talks to a legit client. In emerging use cases (esp. wallets), the way through the backend is seen as not as privacy preserving as it should be. Using the apps backend instead to issue an assertion to its app(s) and use that assertion to authenticate to the AS is the alternative being proposed. The backend uses platform attestation to ensure the caller is a instance of the backend's app. That's the origin of the name attestation based client authentication. Binding the attestation to a key ensures it cannot be replayed by other parties. With such an attestation, the app can directly call the AS (while establishing confidence the AS talks to the legit client).\r\n\r\nConclusion: the attestation is used to establish confidence the AS is talking to an instance of a certain client. This is inline with the purpose of client authentication. That's why the idea to use the existing client authentication mechanics here makes sense to me. \r\n\r\nre public client: I would like to understand how the suggested differentiation between attestation and public client shall work. Can someone please share an example flow with request examples? I would especially like to know what client_id such a public client would use. I'm asking since in the proposed flow, the client_id is determined by the trusted 3rd party issuing the client attestation assertion. ",
+          "createdAt": "2023-11-22T11:17:42Z",
+          "updatedAt": "2023-11-22T11:20:09Z"
         }
       ]
     },
@@ -5005,6 +5012,48 @@
               "updatedAt": "2023-11-16T08:02:42Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 65,
+      "id": "PR_kwDOJaEkaM5gJfwG",
+      "title": "Update draft-ietf-oauth-attestation-based-client-auth.md",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/65",
+      "state": "MERGED",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "affiliation status for IETF still unclear",
+      "createdAt": "2023-11-22T16:04:05Z",
+      "updatedAt": "2023-11-22T19:37:35Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
+      "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "affiliation",
+      "headRefOid": "edd6ad8fb1b66c78af04b121fb1102c2ba7a37ea",
+      "closedAt": "2023-11-22T19:37:35Z",
+      "mergedAt": "2023-11-22T19:37:35Z",
+      "mergedBy": "tplooker",
+      "mergeCommit": {
+        "oid": "efa100ca094afee2303275bd8f518b81c9a0c97a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOJaEkaM5oBqUA",
+          "commit": {
+            "abbreviatedOid": "edd6ad8"
+          },
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2023-11-22T19:37:30Z",
+          "updatedAt": "2023-11-22T19:37:30Z",
+          "comments": []
         }
       ]
     }
