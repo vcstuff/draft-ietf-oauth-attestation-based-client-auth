@@ -5,8 +5,7 @@
 Network Working Group                                          T. Looker
 Internet-Draft                                                     MATTR
 Intended status: Informational                                P. Bastian
-Expires: 19 May 2024                                Bundesdruckerei GmbH
-                                                        16 November 2023
+Expires: 27 May 2024                                    24 November 2023
 
 
            OAuth 2.0 Attestation-Based Client Authentication
@@ -47,7 +46,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 19 May 2024.
+   This Internet-Draft will expire on 27 May 2024.
 
 Copyright Notice
 
@@ -78,6 +77,7 @@ Table of Contents
    6.  Privacy Considerations
      6.1.  Client Instance Tracking Across Authorization Servers
    7.  Security Considerations
+     7.1.  Replay Attack Detection
    8.  Appendix A IANA Considerations
      8.1.  Sub-Namespace Registration of urn:ietf:params:oauth:client-
            assertion-type:jwt-client-attestation
@@ -89,6 +89,7 @@ Table of Contents
      9.2.  Informative References
    Appendix A.  Additional Examples
      A.1.  Wallet Instance Attestation
+   Appendix B.  Document History
    Acknowledgments
    Authors' Addresses
 
@@ -106,77 +107,65 @@ Table of Contents
    The following diagram depicts the overall architecture and protocol
    flow.
 
-                              (3) Generate Client
-                                  Attestation
-                                  +-------+
-                                  |       |
-                                  |      \ /
-                              +---------------+
-                              |               |
-                              |               |
-                              |    Client     |
-                              |    Backend    |
-                              |               |
-                              |               |
-                              +---------------+
-                                 / \      |
-                                  |       |
-                (2) Request       |       |     (4) Respond with
-                Client            |       |     generated Client
-                Attestation       |       |     Attestation
-                for generated     |       |
-                key               |       |
-                                  |       |
-                                  |      \ /
-                              +---------------+                          +---------------+
-                              |               |                          |               |
-                     +------->|               |<------------------------>|               |
-  (1) Generate       |        |    Client     |    (6) Interaction       | Authorization |
-  Attestation Key    |        |   Instance    |    using Client          |    Server     |
-                     +--------|               |    Attestation + PoP     |               |
-                              |               |    for authentication    |               |
-                              +---------------+                          +---------------+
-                                 / \      |
-                                  |       |
-                                  +-------+
-                                (5) Generate
-                           Client Attestation PoP
+                       (3)
+                    +-------+
+                    |       |
+                    |      \ /
+                +---------------+
+                |               |
+                |    Client     |
+                |    Backend    |
+                |               |
+                +---------------+
+                   / \      |
+               (2)  |       |  (4)
+                    |      \ /
+                +---------------+           +---------------+
+         +----->|               |           |               |
+     (1) |      |    Client     |    (6)    | Authorization |
+         |      |   Instance    |<--------->|    Server     |
+         +------|               |           |               |
+                +---------------+           +---------------+
+                   / \      |
+                    |       |
+                    +-------+
+                       (5)
 
-   The flow starts with the Authorization Server communicating its
-   requirements for the client authentication to the client, made
-   available in its metadata.  A Client instance that wants to request
-   an access token from this Authorization Server needs to obtain a
-   Client Attestation JWT, for example, from its client backend first.
+   The following steps describe this OAuth flow:
 
-   Therefore, the client generates a key (Client Instance Key) and
-   (platform specific) attestations to prove its authenticity, integrity
-   and security to the client backend (step 1).  The Client instance
-   sends this data to the client backend in request for a Client
-   Attestation JWT (step 2).  If the Client Backend successfully
-   validates the Client Instance Key and further data, it generates a
-   signed Client Attestation JWT (step 3).  As the Client Attestation
-   JWT is cryptographically bound to the Client Instance Key generated
-   by the client, the attestation is bound to this particular client
-   instance.  The client backend responds to the client's request by
-   sending the Client Attestation JWT (step 4).
+   (1) The Client Instance generates a key (Client Instance Key) and
+   optional further attestations (that are out of scope) to prove its
+   authenticity to the Client Backend.
 
-   The client can proceed now and generate a Client Attestation Proof of
-   Possession (PoP) for the Client Instance Key (step 5).  Lastly, the
-   client sends both the Client Attestation JWT and the Client
-   Attestation PoP with the Token Request to the Authorization Server.
-   The Authorization Server validates the client attestation and thus
-   authenticates the client.  The Authorization Server may continue to
-   issue sender-constrained access tokens using [DPOP].
+   (2) The Client Instance sends this data to the Client Backend in
+   request for a Client Attestation JWT.
 
-   Note that the protocol for steps 2 and 4 and how the client instance
-   authenticates with the client backend is out of scope of this
+   (3) The Client Backend validates the Client Instance Key and optional
+   further data.  It generates a signed Client Attestation JWT that is
+   cryptographically bound to the Client Instance Key generated by the
+   Client.  Therefore, the attestation is bound to this particular
+   Client Instance.
+
+   (4) The Client Backend responds to the Client Instance by sending the
+   Client Attestation JWT.
+
+   (5) The Client Instance generates a Proof of Possession (PoP) with
+   the Client Instance Key.
+
+   (6) The Client Instance sends both the Client Attestation JWT and the
+   Client Attestation PoP JWT to the authorization server, e.g. within a
+   token request.  The authorization server validates the Client
+   Attestation and thus authenticates the Client Instance.
+
+   Note that the protocol for steps (2) and (4) and how the Client
+   Instance authenticates to the Client Backend is out of scope of this
    specification.  Note also that this specification can be utilized
    without the client having a backend server at all; in this case, each
    client instance will perform the functions described as being done by
    the backend for itself.
 
    This specification defines the format of the Client Attestation that
-   a client instance uses to authenticate in its interactions with an
+   a Client Instance uses to authenticate in its interactions with an
    authorization server, which is comprised of two key parts:
 
    1.  A Client Attestation JWT - typically produced by the client
@@ -287,10 +276,7 @@ iOiJSUzI1[...omitted for brevity...]
    6.   The JWT MAY contain an "iat" (issued at) claim that identifies
         the time at which the JWT was issued.
 
-   7.   The JWT MAY contain a "jti" (JWT ID) claim that provides a
-        unique identifier for the token.
-
-   8.   The JWT MAY contain a "aal" (authenticator assurance level)
+   7.   The JWT MAY contain a "aal" (authenticator assurance level)
         claim that describes the attested assurance level of the Client
         Instance and the Client Instance Key. The claim value contains a
         URI that references a jurisdictional framework.  Consumers of
@@ -298,15 +284,15 @@ iOiJSUzI1[...omitted for brevity...]
         if they intend to state an assurance level for their issued
         tokens themselves.
 
-   9.   The JWT MAY contain other claims.
+   8.   The JWT MAY contain other claims.
 
-   10.  The JWT MUST be digitally signed using an asymmetric
+   9.   The JWT MUST be digitally signed using an asymmetric
         cryptographic algorithm.  The authorization server MUST reject
         the JWT if it is using a Message Authentication Code (MAC) based
         algorithm.  The authorization server MUST reject JWTs with an
         invalid signature.
 
-   11.  The authorization server MUST reject a JWT that is not valid in
+   10.  The authorization server MUST reject a JWT that is not valid in
         all other respects per "JSON Web Token (JWT)" [RFC7519].
 
    The following example is the decoded header and payload of a JWT
@@ -363,27 +349,32 @@ iOiJSUzI1[...omitted for brevity...]
         element to identify the authorization server as the intended
         audience of the JWT.
 
-   5.   The JWT MAY contain an "nbf" (not before) claim that identifies
+   5.   The JWT MAY contain an "nonce" claim containing a String value
+        that is provided by the authorization server to associate the
+        Client Attestation PoP JWT with a particular transaction and
+        prevent replay attacks.
+
+   6.   The JWT MAY contain an "nbf" (not before) claim that identifies
         the time before which the token MUST NOT be accepted for
         processing.
 
-   6.   The JWT MAY contain an "iat" (issued at) claim that identifies
+   7.   The JWT MAY contain an "iat" (issued at) claim that identifies
         the time at which the JWT was issued.  Note that the
         authorization server may reject JWTs with an "iat" claim value
         that is unreasonably far in the past.
 
-   7.   The JWT MAY contain other claims.
+   8.   The JWT MAY contain other claims.
 
-   8.   The JWT MUST be digitally signed using an asymmetric
+   9.   The JWT MUST be digitally signed using an asymmetric
         cryptographic algorithm.  The authorization server MUST reject
         the JWT if it is using a Message Authentication Code (MAC) based
         algorithm.  The authorization server MUST reject JWTs with an
         invalid signature.
 
-   9.   The public key used to verify the JWT MUST be the key located in
+   10.  The public key used to verify the JWT MUST be the key located in
         the "cnf" claim of the corresponding client attestation JWT.
 
-   10.  The authorization server MUST reject a JWT that is not valid in
+   11.  The authorization server MUST reject a JWT that is not valid in
         all other respects per "JSON Web Token (JWT)" [RFC7519].
 
    The following example is the decoded header and payload of a JWT
@@ -443,6 +434,40 @@ iOiJSUzI1[...omitted for brevity...]
 
    The guidance provided by [RFC7519] and [RFC8725] applies.
 
+7.1.  Replay Attack Detection
+
+   The following mechanisms exist within this client authentication
+   method in order to allow an authorization server to detect replay
+   attacks for presented client attestation PoPs:
+
+   *  The client uses "jti" (JWT ID) claims for the Client Attestation
+      PoP JWT and the authorization server maintains a list of used
+      (seen) "jti" values for the time of which the JWT would be
+      considered valid based on the applicable "exp" claim.  If any
+      Client Attestation PoP JWT would be replayed, the authorization
+      server would recognize the "jti" and respond with an
+      authentication error.
+
+   *  The authorization server provides a nonce for the particular
+      transaction and the client uses it for the "nonce" claim in the
+      Client Attestation PoP JWT.  The authorization server validates
+      that the nonce matches for the transaction.  This approach may
+      require an additional roundtrip in the protocol.  The
+      authorization server MUST ensure that the nonce provides
+      sufficient entropy.
+
+   *  The authorization server may expect the usage of a nonce in the
+      Client Attestation PoP JWT, but instead of providing the nonce
+      explicitly, the client may implicitly reuse an existing artefact,
+      e.g. the authorization code.  The authorization server MUST ensure
+      that the nonce provides sufficient entropy.
+
+   The approach using a nonce explicitly provided by the authorization
+   server gives stronger replay attack detection guarantees, however
+   support by the authorization server is OPTIONAL to simplify mandatory
+   implementation requirements.  The "jti" method is mandatory and hence
+   acts as a default fallback.
+
 8.  Appendix A IANA Considerations
 
 8.1.  Sub-Namespace Registration of urn:ietf:params:oauth:client-
@@ -495,10 +520,6 @@ iOiJSUzI1[...omitted for brevity...]
 
 9.1.  Normative References
 
-   [DPOP]     Fett, D., Campbell, B., Bradley, J., Lodderstedt, T.,
-              Jones, M., and D. Waite, "OAuth 2.0 Demonstrating Proof-
-              of-Possession at the Application Layer (DPoP)", n.d..
-
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
@@ -521,10 +542,6 @@ iOiJSUzI1[...omitted for brevity...]
               P. Hunt, "OAuth 2.0 Dynamic Client Registration Protocol",
               RFC 7591, DOI 10.17487/RFC7591, July 2015,
               <https://www.rfc-editor.org/rfc/rfc7591>.
-
-   [RFC7638]  Jones, M. and N. Sakimura, "JSON Web Key (JWK)
-              Thumbprint", RFC 7638, DOI 10.17487/RFC7638, September
-              2015, <https://www.rfc-editor.org/rfc/rfc7638>.
 
    [RFC7800]  Jones, M., Bradley, J., and H. Tschofenig, "Proof-of-
               Possession Key Semantics for JSON Web Tokens (JWTs)",
@@ -593,11 +610,41 @@ A.1.  Wallet Instance Attestation
         }
 }
 
+Appendix B.  Document History
+
+   -01
+
+   *  Updated eIDAS example in appendix
+
+   *  Removed text around jti claim in client attestation, refined text
+      for its usage in the client attestation pop
+
+   *  Refined text around cnf claim in client attestation
+
+   *  Clarified how to bind refresh tokens to a client instance using
+      this client authentication method
+
+   *  Made it more explicit that the client authentication mechanism is
+      general purpose making it compatible with extensions like PAR
+
+   *  Updated acknowledgments
+
+   *  Simplified the diagram in the introduction
+
+   *  Updated references
+
+   *  Added some guidance around replay attack detection
+
+   -00
+
+   *  Initial draft
+
 Acknowledgments
 
-   We would like to thank Brian Campbell, Michael B.  Jones, Torsten
-   Lodderstedt, and Kristina Yasuda for their valuable contributions to
-   this specification.
+   We would like to thank Brian Campbell, Francesco Marino, Guiseppe De
+   Marco, Kristina Yasuda, Michael B.  Jones, Takahiko Kawasaki and
+   Torsten Lodderstedt for their valuable contributions to this
+   specification.
 
 Authors' Addresses
 
@@ -607,5 +654,4 @@ Authors' Addresses
 
 
    Paul Bastian
-   Bundesdruckerei GmbH
    Email: paul.bastian@bdr.de
