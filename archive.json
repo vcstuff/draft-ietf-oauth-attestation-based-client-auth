@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-23T00:45:31.311440+00:00",
+  "timestamp": "2023-11-26T00:49:41.081741+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -2007,6 +2007,22 @@
           "updatedAt": "2023-11-17T02:39:33Z"
         }
       ]
+    },
+    {
+      "number": 66,
+      "id": "I_kwDOJaEkaM53y6Te",
+      "title": "Include guidance to use token_endoint_auth_methods_support",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/issues/66",
+      "state": "OPEN",
+      "author": "paulbastian",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2023-11-24T14:41:45Z",
+      "updatedAt": "2023-11-24T14:41:45Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -4381,13 +4397,13 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #15 \r\nCloses #29 \r\n\r\n## \ud83d\udcd1 Description\r\nAdd text on aal claim\r\n\r\n<!-- You can also choose to add a list of changes and if they have been completed or not by using the markdown to-do list syntax\r\n- [ ] Not Completed\r\n- [x] Completed\r\n-->\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\n[click here for rendered preview of PR](https://github.com/<repo-name>/<branch-name>/<draft-name>.html)",
       "createdAt": "2023-10-09T14:31:36Z",
-      "updatedAt": "2023-11-16T10:44:24Z",
+      "updatedAt": "2023-11-24T13:39:37Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
-      "baseRefOid": "2afbd665e8cbd9e9c2c82fabf918da05ed573037",
+      "baseRefOid": "efa100ca094afee2303275bd8f518b81c9a0c97a",
       "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "headRefName": "aal",
-      "headRefOid": "3f8791c029fa3239d798bf7c721d6a061bae88cc",
+      "headRefOid": "ca1825a223e6f3d9b2dc0d996578e0ad6287f0d7",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -4803,7 +4819,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #59\r\n\r\n## \ud83d\udcd1 Description\r\nThis PR adds server-provided nonces as a way to check the freshness of Client Attestation PoP JWT, in a similar way to what is done in DPoP (RFC 9449).\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\nNA",
       "createdAt": "2023-11-14T14:08:40Z",
-      "updatedAt": "2023-11-17T18:39:15Z",
+      "updatedAt": "2023-11-24T08:23:35Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
@@ -4877,6 +4893,13 @@
           "body": "I'm somehow hesitant to put everything in the headers.\n\nI think we should evaluate to reuse the key from the client attestation as a key for dpop binding and somehow reuse the nonce providing mechanism. As this is a major use case in mind, we should avoid sending multiple nonces, using multiple keys and proofs.",
           "createdAt": "2023-11-17T18:39:14Z",
           "updatedAt": "2023-11-17T18:39:14Z"
+        },
+        {
+          "author": "ju-cu",
+          "authorAssociation": "NONE",
+          "body": "I also prefer reusing and building upon existing specs, i.e. DPoP (RFC 9449) and Assertion based client authentication (RFC 7521), over copying text. This spec already profiles RFC 7521 but could also use DPoP to satisfy the key-binding of the client attestation. Instead of concatenating two JWTs into a single assertion, the `client_assertion` parameter should hold a key-binding JWT, aka the client attestation JWT. The DPoP HTTP header holds the DPoP proof JWT that serves as the client attestation PoP JWT. In that way, there is no need to define the client attestation PoP JWT in this spec as it can just point to DPoP and use all the mechanisms defined there, including the nonce mechanism. A token request would look like this:\r\n\r\n```http\r\nPOST /token HTTP/1.1\r\nHost: as.example\r\nContent-Type: application/x-www-form-urlencoded\r\nDPoP: eyJ0eXAiOiJkcG9wK2p3dCIsImp3ayI6eyJhbGciOiJFUzI1NiIsImNydiI6IlAtMjU2Iiwia3R5IjoiRUMiLCJ4IjoiaThReW03NFRNUHVLQXVKUGlZczFSZlVsYTVjemNxelVobEpmRHNMdzd0NCIsInkiOiJGQjlUY2ZmeVZDSEpFQjJjejc4NTE2MUE0SmxlTkh2cG44bXhHRldZMlNjIn0sImFsZyI6IkVTMjU2In0.eyJqdGkiOiIzNTc2ODI5Ny1kZWM1LTQ2ZjYtODVlNS1iNzU4MjE2YWI1ZmYiLCJodG0iOiJQT1NUIiwiaHR1IjoiaHR0cHM6Ly9hcy5leGFtcGxlL3Rva2VuIiwiaWF0IjoxNzAwODEyODAwLCJub25jZSI6ImV5SjdTX3pHLmV5SkgwLVouSFg0dy03diJ9.5VuDrkd8RhMRaps_AzJBs2p-_UXXWT4dVHITBHiQxe31GeDq81otnIh3HBQN8_XjS1diHPq1tti1pn55eZdI5g\r\n\r\ngrant_type=authorization_code&\r\ncode=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&\r\nclient_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-client-attestation&\r\nclient_assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6IjIyIn0.eyJpc3Mi[...omitted for brevity...].cC4hiUPo[...omitted for brevity...]\r\n\r\n```\r\n\r\nwhere the DPoP proof JWT decodes as follows:\r\n```json\r\nJOSE Header\r\n{\r\n  \"typ\": \"dpop+jwt\",\r\n  \"jwk\" : {\r\n    \"alg\": \"ES256\",\r\n    \"crv\": \"P-256\",\r\n    \"kty\": \"EC\",\r\n    \"x\": \"i8Qym74TMPuKAuJPiYs1RfUla5czcqzUhlJfDsLw7t4\",\r\n    \"y\": \"FB9TcffyVCHJEB2cz785161A4JleNHvpn8mxGFWY2Sc\"\r\n   },\r\n  \"alg\": \"ES256\"\r\n}\r\n\r\nPayload\r\n{\r\n  \"jti\": \"35768297-dec5-46f6-85e5-b758216ab5ff\",\r\n  \"htm\": \"POST\",\r\n  \"htu\": \"https://as.example/token\",\r\n  \"iat\": \"1700812800\",\r\n  \"nonce\": \"eyJ7S_zG.eyJH0-Z.HX4w-7v\"\r\n}\r\n```\r\n\r\nNote, that the DPoP proof JWT MUST contain the `jwk` parameter in the JOSE header according to RFC 9449. In the context of client authentication as defined in this spec, the authorization server MUST use the public key from the `cnf` claim of the `client_assertion` to validate the DPoP proof. The authorization server MAY ignore the `jwk` parameter of the DPoP proof JWT.",
+          "createdAt": "2023-11-24T08:21:29Z",
+          "updatedAt": "2023-11-24T08:23:35Z"
         }
       ],
       "reviews": [
