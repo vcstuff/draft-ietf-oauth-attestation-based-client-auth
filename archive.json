@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-11-28T00:46:52.065656+00:00",
+  "timestamp": "2023-11-30T00:46:05.673237+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -4819,7 +4819,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #59\r\n\r\n## \ud83d\udcd1 Description\r\nThis PR adds server-provided nonces as a way to check the freshness of Client Attestation PoP JWT, in a similar way to what is done in DPoP (RFC 9449).\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\nNA",
       "createdAt": "2023-11-14T14:08:40Z",
-      "updatedAt": "2023-11-24T08:23:35Z",
+      "updatedAt": "2023-11-29T21:20:18Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
@@ -4900,6 +4900,13 @@
           "body": "I also prefer reusing and building upon existing specs, i.e. DPoP (RFC 9449) and Assertion based client authentication (RFC 7521), over copying text. This spec already profiles RFC 7521 but could also use DPoP to satisfy the key-binding of the client attestation. Instead of concatenating two JWTs into a single assertion, the `client_assertion` parameter should hold a key-binding JWT, aka the client attestation JWT. The DPoP HTTP header holds the DPoP proof JWT that serves as the client attestation PoP JWT. In that way, there is no need to define the client attestation PoP JWT in this spec as it can just point to DPoP and use all the mechanisms defined there, including the nonce mechanism. A token request would look like this:\r\n\r\n```http\r\nPOST /token HTTP/1.1\r\nHost: as.example\r\nContent-Type: application/x-www-form-urlencoded\r\nDPoP: eyJ0eXAiOiJkcG9wK2p3dCIsImp3ayI6eyJhbGciOiJFUzI1NiIsImNydiI6IlAtMjU2Iiwia3R5IjoiRUMiLCJ4IjoiaThReW03NFRNUHVLQXVKUGlZczFSZlVsYTVjemNxelVobEpmRHNMdzd0NCIsInkiOiJGQjlUY2ZmeVZDSEpFQjJjejc4NTE2MUE0SmxlTkh2cG44bXhHRldZMlNjIn0sImFsZyI6IkVTMjU2In0.eyJqdGkiOiIzNTc2ODI5Ny1kZWM1LTQ2ZjYtODVlNS1iNzU4MjE2YWI1ZmYiLCJodG0iOiJQT1NUIiwiaHR1IjoiaHR0cHM6Ly9hcy5leGFtcGxlL3Rva2VuIiwiaWF0IjoxNzAwODEyODAwLCJub25jZSI6ImV5SjdTX3pHLmV5SkgwLVouSFg0dy03diJ9.5VuDrkd8RhMRaps_AzJBs2p-_UXXWT4dVHITBHiQxe31GeDq81otnIh3HBQN8_XjS1diHPq1tti1pn55eZdI5g\r\n\r\ngrant_type=authorization_code&\r\ncode=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&\r\nclient_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-client-attestation&\r\nclient_assertion=eyJhbGciOiJSUzI1NiIsImtpZCI6IjIyIn0.eyJpc3Mi[...omitted for brevity...].cC4hiUPo[...omitted for brevity...]\r\n\r\n```\r\n\r\nwhere the DPoP proof JWT decodes as follows:\r\n```json\r\nJOSE Header\r\n{\r\n  \"typ\": \"dpop+jwt\",\r\n  \"jwk\" : {\r\n    \"alg\": \"ES256\",\r\n    \"crv\": \"P-256\",\r\n    \"kty\": \"EC\",\r\n    \"x\": \"i8Qym74TMPuKAuJPiYs1RfUla5czcqzUhlJfDsLw7t4\",\r\n    \"y\": \"FB9TcffyVCHJEB2cz785161A4JleNHvpn8mxGFWY2Sc\"\r\n   },\r\n  \"alg\": \"ES256\"\r\n}\r\n\r\nPayload\r\n{\r\n  \"jti\": \"35768297-dec5-46f6-85e5-b758216ab5ff\",\r\n  \"htm\": \"POST\",\r\n  \"htu\": \"https://as.example/token\",\r\n  \"iat\": \"1700812800\",\r\n  \"nonce\": \"eyJ7S_zG.eyJH0-Z.HX4w-7v\"\r\n}\r\n```\r\n\r\nNote, that the DPoP proof JWT MUST contain the `jwk` parameter in the JOSE header according to RFC 9449. In the context of client authentication as defined in this spec, the authorization server MUST use the public key from the `cnf` claim of the `client_assertion` to validate the DPoP proof. The authorization server MAY ignore the `jwk` parameter of the DPoP proof JWT.",
           "createdAt": "2023-11-24T08:21:29Z",
           "updatedAt": "2023-11-24T08:23:35Z"
+        },
+        {
+          "author": "bc-pi",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@ju-cu's description of how the DPoP proof JWT would serve as the client attestation PoP JWT is pretty much in line with how I'd envisioned it. Although I believe it'd need to be a bit less prescriptive about checking the confirmation/pop key and just say that the public key from the `cnf` of Client Attestation JWT must match the key of the `jwk` header of the DPoP proof JWT. This would allow for the _conventional_ processing order with DPoP where the DPoP proof JWT is validated first followed by binding to or checking the binding of things against the key of the DPoP proof JWT. \r\n\r\n",
+          "createdAt": "2023-11-29T21:19:56Z",
+          "updatedAt": "2023-11-29T21:19:56Z"
         }
       ],
       "reviews": [
