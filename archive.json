@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-12-03T00:49:39.321775+00:00",
+  "timestamp": "2023-12-05T00:47:19.732442+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -4819,7 +4819,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #59\r\n\r\n## \ud83d\udcd1 Description\r\nThis PR adds server-provided nonces as a way to check the freshness of Client Attestation PoP JWT, in a similar way to what is done in DPoP (RFC 9449).\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\nNA",
       "createdAt": "2023-11-14T14:08:40Z",
-      "updatedAt": "2023-11-29T21:20:18Z",
+      "updatedAt": "2023-12-04T16:09:59Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
@@ -4907,6 +4907,13 @@
           "body": "@ju-cu's description of how the DPoP proof JWT would serve as the client attestation PoP JWT is pretty much in line with how I'd envisioned it. Although I believe it'd need to be a bit less prescriptive about checking the confirmation/pop key and just say that the public key from the `cnf` of Client Attestation JWT must match the key of the `jwk` header of the DPoP proof JWT. This would allow for the _conventional_ processing order with DPoP where the DPoP proof JWT is validated first followed by binding to or checking the binding of things against the key of the DPoP proof JWT. \r\n\r\n",
           "createdAt": "2023-11-29T21:19:56Z",
           "updatedAt": "2023-11-29T21:19:56Z"
+        },
+        {
+          "author": "pmhsfelix",
+          "authorAssociation": "NONE",
+          "body": "This conversation made me consider the following:\r\n- There is already [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523.html) for **bearer** JWT-based client authentication (as a profile to [RFC 7521](https://www.rfc-editor.org/rfc/rfc7521)).\r\n- However, there isn't any standard for JWT-based client authentication using **holder-of-key** assertions instead of bearer, which is useful for high assurance scenarios.\r\n\r\nSo, what if, instead of having an attestation specific specification, this work was divided into two parts.\r\n- First, a \"sibling\" of RFC 7523 using **DPoP-based holder-of-key JWT assertions**. \r\n- Second, a set of attestation-specific claims, communicating extra attestation-specific information about the client to the AS.\r\n\r\nSeems a bit more work, but the result is also much more general: a mechanism for client authentication using JWT assertions with proof-of-possession, independent of attestation. And by using the DPoP specification, the proof-of-possession part could be relatively easier to specify.\r\n\r\nIf you think this is a conversation worth having, I can create an issue, since this isn't specifically related to this PR.",
+          "createdAt": "2023-12-04T16:09:58Z",
+          "updatedAt": "2023-12-04T16:09:58Z"
         }
       ],
       "reviews": [
