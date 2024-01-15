@@ -5,8 +5,7 @@
 Network Working Group                                          T. Looker
 Internet-Draft                                                     MATTR
 Intended status: Informational                                P. Bastian
-Expires: 18 July 2024                               Bundesdruckerei GmbH
-                                                         15 January 2024
+Expires: 18 July 2024                                    15 January 2024
 
 
            OAuth 2.0 Attestation-Based Client Authentication
@@ -525,5 +524,4 @@ Authors' Addresses
 
 
    Paul Bastian
-   Bundesdruckerei GmbH
    Email: paul.bastian@bdr.de
