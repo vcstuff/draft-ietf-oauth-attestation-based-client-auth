@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2024-01-14T00:51:57.494850+00:00",
+  "timestamp": "2024-01-16T00:47:09.906247+00:00",
   "repo": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
   "labels": [
     {
@@ -1835,9 +1835,17 @@
       "labels": [],
       "body": "Following up on the conversations some of us had after IIW (see https://github.com/openid/OpenID4VCI/issues/71#issuecomment-1719631991), this issue proposes the addition of a server provided nonce mechanism to limit the lifetime of a Client Attestation PoP JWT, similar to the [DPoP nonce mechanism](https://www.rfc-editor.org/rfc/rfc9449.html#name-authorization-server-provid).\r\n\r\nThis relates to https://github.com/openid/OpenID4VCI/issues/71, however the required changes need to be addressed on the attestation spec and not on the VCI spec.\r\n\r\nI'm currently working on a PR to add this. ",
       "createdAt": "2023-11-08T12:14:18Z",
-      "updatedAt": "2023-11-08T12:14:18Z",
+      "updatedAt": "2024-01-15T21:28:52Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Please see #67 for a proposal to use DPoP which would provide an alternative solution to this proposal.",
+          "createdAt": "2024-01-15T21:28:51Z",
+          "updatedAt": "2024-01-15T21:28:51Z"
+        }
+      ]
     },
     {
       "number": 60,
@@ -4819,7 +4827,7 @@
       "labels": [],
       "body": "<!-- If this pull request closes an issue, please mention the issue number below -->\r\nCloses #59\r\n\r\n## \ud83d\udcd1 Description\r\nThis PR adds server-provided nonces as a way to check the freshness of Client Attestation PoP JWT, in a similar way to what is done in DPoP (RFC 9449).\r\n\r\n## Preview Link\r\n\r\n<!-- Update the link below to provide reviewers with a convenient link to view a rendered version of the PR-->\r\n<!-- In general the link should be of the form https://github.com/<repo-name>/<branch-name>/<draft-name>.html-->\r\n\r\nNA",
       "createdAt": "2023-11-14T14:08:40Z",
-      "updatedAt": "2023-12-04T16:09:59Z",
+      "updatedAt": "2024-01-15T21:29:43Z",
       "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
       "baseRefName": "main",
       "baseRefOid": "4375d894ce7e58c91d5ed282cfd733dd48417812",
@@ -4914,6 +4922,13 @@
           "body": "This conversation made me consider the following:\r\n- There is already [RFC 7523](https://www.rfc-editor.org/rfc/rfc7523.html) for **bearer** JWT-based client authentication (as a profile to [RFC 7521](https://www.rfc-editor.org/rfc/rfc7521)).\r\n- However, there isn't any standard for JWT-based client authentication using **holder-of-key** assertions instead of bearer, which is useful for high assurance scenarios.\r\n\r\nSo, what if, instead of having an attestation specific specification, this work was divided into two parts.\r\n- First, a \"sibling\" of RFC 7523 using **DPoP-based holder-of-key JWT assertions**. \r\n- Second, a set of attestation-specific claims, communicating extra attestation-specific information about the client to the AS.\r\n\r\nSeems a bit more work, but the result is also much more general: a mechanism for client authentication using JWT assertions with proof-of-possession, independent of attestation. And by using the DPoP specification, the proof-of-possession part could be relatively easier to specify.\r\n\r\nIf you think this is a conversation worth having, I can create an issue, since this isn't specifically related to this PR.",
           "createdAt": "2023-12-04T16:09:58Z",
           "updatedAt": "2023-12-04T16:09:58Z"
+        },
+        {
+          "author": "tplooker",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Please see #67 for a concrete proposal to shift to using DPoP as the PoP syntax for this client authentication method.",
+          "createdAt": "2024-01-15T21:29:42Z",
+          "updatedAt": "2024-01-15T21:29:42Z"
         }
       ],
       "reviews": [
@@ -5093,6 +5108,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 67,
+      "id": "PR_kwDOJaEkaM5kIFOQ",
+      "title": "feat: initial proposal to use dpop",
+      "url": "https://github.com/vcstuff/draft-ietf-oauth-attestation-based-client-auth/pull/67",
+      "state": "OPEN",
+      "author": "tplooker",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "**DRAFT PR FOR DISCUSSION**\r\n\r\n## \ud83d\udcd1 Description\r\n\r\nFollowing discussion across multiple issues and PR's including #59 and #64. This PR represents a draft proposal to use the DPoP HTTP Header as defined in [RFC9449](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-dpop-16#name-the-dpop-http-header) instead of the client attestation pop.\r\n\r\n## Preview Link\r\n\r\n[click here for rendered preview of PR](https://github.com/draft-ietf-oauth-attestation-based-client-auth/tl/dpop-proof/draft-ietf-oauth-attestation-based-client-auth.html)",
+      "createdAt": "2024-01-15T21:23:08Z",
+      "updatedAt": "2024-01-15T21:27:09Z",
+      "baseRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "baseRefName": "main",
+      "baseRefOid": "efa100ca094afee2303275bd8f518b81c9a0c97a",
+      "headRepository": "vcstuff/draft-ietf-oauth-attestation-based-client-auth",
+      "headRefName": "tl/dpop-proof",
+      "headRefOid": "d9636461a255455699df9c36c5937f771490be39",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
